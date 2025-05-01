@@ -1,0 +1,25 @@
+https://www.dbdiagram.io/d
+
+Table users {
+  id integer [primary key]
+  username varchar (unique) [not null]
+  password varchar [not null]
+  token int
+  elo integer [default: 100] 
+  bio varchar
+  image ENUM(":-), :-(, ...")
+  winning_speech varchar
+  created_at timestamp
+}
+
+Table history {
+  id integer [primary key]
+  user_id integer
+  tournament integer
+  name varchar [not null]
+  count integer [not null]
+  duration integer [not null]
+  created_at timestamp
+}
+ 
+Ref: history.user_id > users.id
