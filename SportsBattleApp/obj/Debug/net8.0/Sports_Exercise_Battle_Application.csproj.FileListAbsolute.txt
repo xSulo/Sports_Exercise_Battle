@@ -1,0 +1,1 @@
+C:\Users\Asus\OneDrive - FH Technikum Wien\Dokumente\FH Technikum\3. Semester\Software Engineering\Panel Exam\Sports_Exercise_Battle\Sports_Exercise_Battle_Application\obj\Debug\net8.0\Sports_Exercise_Battle_Application.GeneratedMSBuildEditorConfig.editorconfig
