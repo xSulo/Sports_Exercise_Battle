@@ -8,22 +8,33 @@ namespace Sports_Exercise_Battle_Application.Models
 {
     public class User
     {
+        public enum UserImage
+        {
+            Happy, // :-)
+            Sad, // :-(
+            Angry, // >:-(
+            Neutral, // :-|
+            Surprised, // :-O
+            Confused, // :-/
+            Cool // B-)
+        }
+
         public int Id { get; set; }
         public string UserName { get; set; }
         public string PasswordHash { get; private set; }
         public int Elo { get; set; }
-        public string Token { get; private set; }
-        public string Image { get; set; }
-        public string Bio { get; set; }
+        public string? Token { get; private set; }
+        public string? Image { get; set; }
+        public string? Bio { get; set; }
+        public DateTime? TokenExpiresAt { get; set; } 
 
         public User() { }
 
-        // For registration
+        // For registration and login
         public User(string userName, string plainTextPassword)
         {
             UserName = userName;
-            passwordHash;
-            Elo = 100;
+            SetPassword(plainTextPassword);
         }
 
         // To retrieve data from the database
@@ -39,12 +50,12 @@ namespace Sports_Exercise_Battle_Application.Models
 
         public void SetPassword(string plainTextPassword)
         {
-            PasswordHash = HashPassword(plainTextPassword);
+            PasswordHash = HashValue(plainTextPassword);
         }
 
-        private string HashPassword(string plainTextPassword)
+        private string HashValue(string plainTextValue)
         {
-            return BCrypt.Net.BCrypt.HashPassword(plainTextPassword);
+            return BCrypt.Net.BCrypt.HashValue(plainTextValue);
         }
 
         public void SetToken(string token)
@@ -52,9 +63,14 @@ namespace Sports_Exercise_Battle_Application.Models
             Token = token;
         }
 
-        private string CreateToken()
+        private void CreateToken()
         {
-            return $"{UserName}-sebToken";
+            Token = HashValue($"{UserName}-sebToken");
+        }
+
+        public void SetImage(UserImage newImage)
+        {
+            Image = newImage.ToString();
         }
     }
 }
