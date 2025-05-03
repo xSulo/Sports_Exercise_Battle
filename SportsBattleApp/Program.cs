@@ -1,8 +1,12 @@
-﻿using DatabaseConnection = SportsBattleApp.Data.DatabaseConnection;
+﻿using SportsBattleApp.Http;
+using DatabaseConnection = SportsBattleApp.Data.DatabaseConnection;
 
-Console.WriteLine("Hello, World!");
 DatabaseConnection dbConnection;
 dbConnection = new DatabaseConnection();
-dbConnection.OpenConnection();
+/*dbConnection.OpenConnection();
 dbConnection.CloseConnection();
-dbConnection.Dispose();
+dbConnection.Dispose();*/
+
+var router = new RequestRouter();
+var httpServer1 = new HttpServer(router);
+await httpServer1.StartAsync();
