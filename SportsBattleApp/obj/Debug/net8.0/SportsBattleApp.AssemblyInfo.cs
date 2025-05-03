@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SportsBattleApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6785b485b39b466e9e40e78321eb4a38cd5d43f2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4066213a023b8890de0c72e8f1443cdb5e67c8bd")]
 [assembly: System.Reflection.AssemblyProductAttribute("SportsBattleApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SportsBattleApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

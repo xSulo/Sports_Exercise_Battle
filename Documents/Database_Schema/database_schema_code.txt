@@ -4,7 +4,7 @@ Table users {
   id integer [primary key]
   username varchar (unique) [not null]
   password_hash varchar [not null]
-  token varchar
+  token_hash varchar
   elo integer [default: 100] 
   bio varchar
   image ENUM(":-), :-(, ...")
@@ -22,7 +22,5 @@ Table history {
   duration integer [not null]
   created_at timestamp
 }
- 
-Ref: history.user_id > users.id
  
 Ref: history.user_id > users.id

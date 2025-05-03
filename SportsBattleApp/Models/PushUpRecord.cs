@@ -11,7 +11,7 @@ namespace SportsBattleApp.Models
         public int Id { get; set; }
         public int UserId { get; set; }
         public int TournamentNumber { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public int Count { get; set; }
         public int Duration { get; set; }
         
