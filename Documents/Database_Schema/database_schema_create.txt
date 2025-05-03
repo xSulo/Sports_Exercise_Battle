@@ -1,0 +1,22 @@
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  token VARCHAR(255),
+  elo INTEGER DEFAULT 100,
+  bio VARCHAR(255),
+  image VARCHAR(5) CHECK (image IN (':-)', ':-(', '>:-(', ':-|', ':-O', ':-/', 'B-)')),
+  winning_speech VARCHAR(255),
+  token_expires_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE history (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  tournament_number INTEGER,
+  name VARCHAR(255) NOT NULL,
+  count INTEGER NOT NULL,
+  duration INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);

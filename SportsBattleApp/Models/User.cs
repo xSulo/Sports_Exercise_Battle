@@ -20,10 +20,10 @@ namespace SportsBattleApp.Models
         }
 
         public int Id { get; set; }
-        public string UserName { get; set; }
-        public string PasswordHash { get; private set; }
+        public string UserName { get; set; } = string.Empty;
+        public string PasswordHash { get; private set; } = string.Empty;
         public int Elo { get; set; }
-        public string? Token { get; private set; }
+        public string? TokenHash { get; private set; }
         public string? Image { get; set; }
         public string? Bio { get; set; }
         public DateTime? TokenExpiresAt { get; set; } 
@@ -38,12 +38,12 @@ namespace SportsBattleApp.Models
         }
 
         // To retrieve data from the database
-        public User(string userName, string passwordHash, int elo, string token, string image, string bio)
+        public User(string userName, string passwordHash, int elo, string tokenHash, string image, string bio)
         {
             UserName = userName;
             PasswordHash = passwordHash;
             Elo = elo;
-            Token = token;
+            TokenHash = tokenHash;
             Image = image;
             Bio = bio;
         }
@@ -58,14 +58,9 @@ namespace SportsBattleApp.Models
             return BCrypt.Net.BCrypt.HashPassword(plainTextValue);
         }
 
-        public void SetToken(string token)
+        private void CreateAndSetToken()
         {
-            Token = token;
-        }
-
-        private void CreateToken()
-        {
-            Token = HashValue($"{UserName}-sebToken");
+            TokenHash = HashValue($"{UserName}-sebToken");
         }
 
         public void SetImage(UserImage newImage)
