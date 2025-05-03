@@ -2,7 +2,7 @@ CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  token VARCHAR(255),
+  token_hash VARCHAR(255),
   elo INTEGER DEFAULT 100,
   bio VARCHAR(255),
   image VARCHAR(5) CHECK (image IN (':-)', ':-(', '>:-(', ':-|', ':-O', ':-/', 'B-)')),
