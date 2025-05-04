@@ -1,4 +1,7 @@
-﻿namespace SportsBattleApp.Models
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+
+namespace SportsBattleApp.Models
 {
     public class User
     {
@@ -13,8 +16,12 @@
             Cool // B-)
         }
 
-        public int Id { get; set; }
-        public string UserName { get; set; } = string.Empty;
+        //public int Id { get; set; }
+        
+        [JsonProperty("Username")]
+        public string Username { get; set; } = string.Empty;
+        
+        [JsonProperty("Password")]
         public string PasswordHash { get; private set; } = string.Empty;
         public int Elo { get; set; }
         public string? TokenHash { get; private set; }
@@ -25,16 +32,16 @@
         public User() { }
 
         // For registration and login
-        public User(string userName, string plainTextPassword)
+        public User(string userName, string password)
         {
-            UserName = userName;
-            SetPassword(plainTextPassword);
+            Username = userName;
+            PasswordHash = password;
         }
 
         // To retrieve data from the database
-        public User(string userName, string passwordHash, int elo, string tokenHash, string image, string bio)
+        public User(string username, string passwordHash, int elo, string tokenHash, string image, string bio)
         {
-            UserName = userName;
+            Username = username;
             PasswordHash = passwordHash;
             Elo = elo;
             TokenHash = tokenHash;
@@ -42,19 +49,14 @@
             Bio = bio;
         }
 
-        public void SetPassword(string plainTextPassword)
+        public void SetPasswordHash(string passwordHash)
         {
-            PasswordHash = HashValue(plainTextPassword);
+            PasswordHash = passwordHash;
         }
 
-        private string HashValue(string plainTextValue)
+        public void SetTokenHash(string tokenHash)
         {
-            return BCrypt.Net.BCrypt.HashPassword(plainTextValue);
-        }
-
-        private void CreateAndSetToken()
-        {
-            TokenHash = HashValue($"{UserName}-sebToken");
+            TokenHash = tokenHash;
         }
 
         public void SetImage(UserImage newImage)

@@ -8,11 +8,11 @@ dbConnection = new DatabaseConnection();
 dbConnection.CloseConnection();
 dbConnection.Dispose();*/
 
-var tcpServer = new TcpTournament();
-await tcpServer.StartAsync();
-
-var router = new RequestRouter();
+var router = new RequestRouter(dbConnection);
 var httpServer1 = new HttpServer(router);
 await httpServer1.StartAsync();
+
+var tcpServer = new TcpTournament();
+await tcpServer.StartAsync();
 
 

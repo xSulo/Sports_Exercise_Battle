@@ -3,28 +3,32 @@
   "WorkspaceRootPath": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\tcp\\tcptournament.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|solutionrelative:tcp\\tcptournament.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|solutionrelative:services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|solutionrelative:models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|solutionrelative:repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|solutionrelative:services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\http\\httpserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|solutionrelative:http\\httpserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|solutionrelative:controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\data\\databaseconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|solutionrelative:data\\databaseconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\http\\requestrouter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|solutionrelative:http\\requestrouter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\tcp\\tcptournament.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|solutionrelative:tcp\\tcptournament.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D05EF57D-3885-4798-B071-147D8F92BEC0}|SportsBattleApp.csproj|c:\\users\\asus\\onedrive - fh technikum wien\\dokumente\\fh technikum\\3. semester\\software engineering\\panel exam\\sports_exercise_battle\\sportsbattleapp\\models\\pushuprecord.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,7 +42,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -46,46 +50,98 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Controllers\\AuthController.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAiwBsAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-04T09:40:24.589Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Services\\AuthService.cs",
+              "RelativeDocumentMoniker": "Services\\AuthService.cs",
+              "ToolTip": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Services\\AuthService.cs",
+              "RelativeToolTip": "Services\\AuthService.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAywB4AAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-04T09:08:29.452Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Services\\UserService.cs",
+              "RelativeDocumentMoniker": "Services\\UserService.cs",
+              "ToolTip": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Services\\UserService.cs",
+              "RelativeToolTip": "Services\\UserService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-04T03:37:52.776Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UserRepository.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Repositories\\UserRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\UserRepository.cs",
+              "ToolTip": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Repositories\\UserRepository.cs",
+              "RelativeToolTip": "Repositories\\UserRepository.cs",
+              "ViewState": "AgIAAG4AAAAAAAAAAAAwwH0AAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-04T03:39:58.998Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "Controllers\\UserController.cs",
+              "ToolTip": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Controllers\\UserController.cs",
+              "RelativeToolTip": "Controllers\\UserController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABEAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-04T03:33:57.905Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "DatabaseConnection.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Data\\DatabaseConnection.cs",
+              "RelativeDocumentMoniker": "Data\\DatabaseConnection.cs",
+              "ToolTip": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Data\\DatabaseConnection.cs",
+              "RelativeToolTip": "Data\\DatabaseConnection.cs",
+              "ViewState": "AgIAACgAAAAAAAAAAAAYwEAAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-04T06:20:11.168Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "TcpTournament.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Tcp\\TcpTournament.cs",
               "RelativeDocumentMoniker": "Tcp\\TcpTournament.cs",
               "ToolTip": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Tcp\\TcpTournament.cs",
               "RelativeToolTip": "Tcp\\TcpTournament.cs",
-              "ViewState": "AgIAACUAAAAAAAAAAAAiwD4AAAAxAAAAAAAAAA==",
+              "ViewState": "AgIAADYAAAAAAAAAAAAAAD4AAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-04T00:36:30.943Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "HttpServer.cs",
-              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Http\\HttpServer.cs",
-              "RelativeDocumentMoniker": "Http\\HttpServer.cs",
-              "ToolTip": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Http\\HttpServer.cs",
-              "RelativeToolTip": "Http\\HttpServer.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAA7AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-03T11:25:32.83Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "DatabaseConnection.cs",
-              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Data\\DatabaseConnection.cs",
-              "RelativeDocumentMoniker": "Data\\DatabaseConnection.cs",
-              "ToolTip": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Data\\DatabaseConnection.cs",
-              "RelativeToolTip": "Data\\DatabaseConnection.cs",
-              "ViewState": "AgIAADEAAAAAAAAAAAAgwJUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-03T03:20:37.842Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "PushUpRecord.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Models\\PushUpRecord.cs",
               "RelativeDocumentMoniker": "Models\\PushUpRecord.cs",
@@ -94,44 +150,6 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-02T20:51:12.719Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "User.cs",
-              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Models\\User.cs",
-              "RelativeDocumentMoniker": "Models\\User.cs",
-              "ToolTip": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Models\\User.cs",
-              "RelativeToolTip": "Models\\User.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-01T04:34:48.42Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-01T04:09:09.105Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "RequestRouter.cs",
-              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Http\\RequestRouter.cs",
-              "RelativeDocumentMoniker": "Http\\RequestRouter.cs",
-              "ToolTip": "C:\\Users\\Asus\\OneDrive - FH Technikum Wien\\Dokumente\\FH Technikum\\3. Semester\\Software Engineering\\Panel Exam\\Sports_Exercise_Battle\\SportsBattleApp\\Http\\RequestRouter.cs",
-              "RelativeToolTip": "Http\\RequestRouter.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-03T11:30:33.148Z"
             }
           ]
         }
