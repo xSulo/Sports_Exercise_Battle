@@ -32,5 +32,24 @@ namespace SportsBattleApp.Controllers
                 return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
             }
         }
+
+        public async Task<bool> IsTokenValidAsync(string token, string username)
+        {
+            try 
+            { 
+                if(string.IsNullOrWhiteSpace(token))
+                {
+                    Console.WriteLine("[AuthController] No token provided.");
+                    return false;
+                }
+
+                return await _authService.IsTokenValidAsync(token, username);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AuthController] Error during token validation: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

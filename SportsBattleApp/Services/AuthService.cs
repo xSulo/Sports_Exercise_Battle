@@ -1,4 +1,5 @@
-﻿using SportsBattleApp.Repositories;
+﻿using SportsBattleApp.Models;
+using SportsBattleApp.Repositories;
 using static SportsBattleApp.Models.User;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -22,7 +23,7 @@ namespace SportsBattleApp.Services
                     throw new InvalidOperationException("User does not exist.");
                 }
 
-                if (!VerifyPassword(passwordHash, storedPasswordHash))
+                if (!VerifyHash(passwordHash, storedPasswordHash))
                 {
                     throw new InvalidOperationException("Invalid password.");
                 }
@@ -30,7 +31,7 @@ namespace SportsBattleApp.Services
                 string tokenHash = CreateTokenHash(username);
                 DateTime expireDateToken = CreateTokenExpiraryDate();
 
-                await _userRepository.AddTokenHashAsync(username, tokenHash, expireDateToken);
+                await _userRepository.UpdateTokenHashAsync(username, tokenHash, expireDateToken);
 
                 return true;
             }
@@ -55,7 +56,60 @@ namespace SportsBattleApp.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[UserService] Error during Register: {ex.Message}");
+                Console.WriteLine($"[AuthService] Error during Register: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<bool> IsTokenValidAsync(string token, string username)
+        {
+            try
+            {
+                Console.WriteLine(token);
+                if (token.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
+                {
+                    token = token.Substring("Basic ".Length);
+                }
+                Console.WriteLine(token);
+                var storedTokenHash = await _userRepository.GetTokenHashByUsernameAsync(username);
+                
+                if (string.IsNullOrWhiteSpace(storedTokenHash.TokenHash))
+                {
+                    throw new InvalidOperationException("Token not found.");
+                }
+
+                if (storedTokenHash.TokenExpireDate < DateTime.UtcNow)
+                {
+                    throw new InvalidOperationException("Invalid token.");
+                }
+
+                return VerifyHash(token, storedTokenHash.TokenHash);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AuthService] Error during token validation: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<bool> EditUserProfileAsync(string username, User newUserData)
+        {
+            try
+            {
+                //newUserData.SetTokenHash(HashValue(newUserData.Username));
+                //newUserData.TokenExpiresAt = CreateTokenExpiraryDate();
+
+                if (!string.IsNullOrEmpty(newUserData.PasswordHash))
+                {
+                    newUserData.SetPasswordHash(HashValue(newUserData.PasswordHash));
+                }
+
+                return await _userRepository.UpdateUserProfileAsync(username, newUserData);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AuthService] Error during Updating User Profile: {ex.Message}");
                 return false;
             }
         }
@@ -72,12 +126,12 @@ namespace SportsBattleApp.Services
 
         private static DateTime CreateTokenExpiraryDate()
         {
-            return DateTime.UtcNow.AddMinutes(3);
+            return DateTime.UtcNow.AddHours(3);
         }
 
-        private bool VerifyPassword(string plainTextPassword, string passwordHash)
+        private static bool VerifyHash(string plainText, string Hash)
         {
-            return BCrypt.Net.BCrypt.Verify(plainTextPassword, passwordHash);
+            return BCrypt.Net.BCrypt.Verify(plainText, Hash);
         }
     }
 }
