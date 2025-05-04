@@ -1,4 +1,8 @@
 ﻿using Newtonsoft.Json;
+using SportsBattleApp.Controllers;
+using SportsBattleApp.Data;
+using SportsBattleApp.Repositories;
+using SportsBattleApp.Services;
 
 namespace SportsBattleApp.Http
 {
@@ -6,9 +10,20 @@ namespace SportsBattleApp.Http
     {
         private readonly Dictionary<(string method, string path), Func<string, Task<string>>> _routes;
 
-        public RequestRouter()
+        public RequestRouter(DatabaseConnection db)
         {
             _routes = new Dictionary<(string method, string path), Func<string, Task<string>>>(new RouteComparer());
+        
+            var userRepository = new UserRepository(db);
+
+            var userService = new UserService(userRepository);
+            var authService = new AuthService(userRepository);
+
+            var userController = new UserController(userService, authService);
+            var authController = new AuthController(authService);
+
+            AddRoute("POST", "/users", userController.RegisterAsync);
+            AddRoute("POST", "/sessions", authController.LoginAsync);
         }
 
         public void AddRoute(string method, string path, Func<string, Task<string>> handler)
@@ -16,7 +31,7 @@ namespace SportsBattleApp.Http
             _routes[(method, path)] = handler;
         }
 
-        public async Task<string> RouteRequestAsync(string method, string path, string body)
+        public async Task<string> RouteHttpRequestAsync(string method, string path, string body)
         {
             if (_routes.TryGetValue((method, path), out var handler))
             {

@@ -48,7 +48,7 @@ namespace SportsBattleApp.Http
                     body = await reader.ReadToEndAsync();
                 }
 
-                string result = await _router.RouteRequestAsync(method, path, body);
+                string result = await _router.RouteHttpRequestAsync(method, path, body);
 
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(result);
                 response.ContentLength64 = buffer.Length;
