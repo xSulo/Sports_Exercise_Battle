@@ -33,7 +33,7 @@ namespace SportsBattleApp.Controllers
             }
         }
 
-        public async Task<bool> IsTokenValidAsync(string token, string username)
+        public async Task<bool> IsTokenValidAsync(string token)
         {
             try 
             { 
@@ -43,7 +43,7 @@ namespace SportsBattleApp.Controllers
                     return false;
                 }
 
-                return await _authService.IsTokenValidAsync(token, username);
+                return await _authService.IsTokenValidAsync(token);
             }
             catch (Exception ex)
             {

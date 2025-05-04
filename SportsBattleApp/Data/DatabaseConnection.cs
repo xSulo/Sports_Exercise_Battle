@@ -98,7 +98,7 @@ namespace SportsBattleApp.Data
             }
         }
 
-        // For SELECT queries for one row
+        // For SELECT queries for multiple
         public async Task<List<Dictionary<string, object>>> ExecuteReaderAsync(string query, Dictionary<string, object> parameters)
         {
             var result = new List<Dictionary<string, object>>();
