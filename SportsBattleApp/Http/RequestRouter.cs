@@ -9,32 +9,48 @@ namespace SportsBattleApp.Http
 {
     public class RequestRouter
     {
-        private readonly Dictionary<(string method, string path), Func<string, Task<string>>> _routes;
+        private readonly Dictionary<(string method, string path), Func<string, Task<string>>> _routesSimple;
+        private readonly Dictionary<(string method, string path), Func<string, string, Task<string>>> _routesWithToken;
         private readonly List<(string method, string pattern, Func<string, string, Task<string>> handler)> _dynamicRoutes;
         private readonly AuthController _authController;
         public RequestRouter(DatabaseConnection db)
         {
-            _routes = new Dictionary<(string method, string path), Func<string, Task<string>>>(new RouteComparer());
+            _routesSimple = new Dictionary<(string method, string path), Func<string, Task<string>>>(new RouteComparer());
+            _routesWithToken = new Dictionary<(string method, string path), Func<string, string, Task<string>>>(new RouteComparer());
             _dynamicRoutes = new List<(string method, string pattern, Func<string, string, Task<string>> handler)>();
 
             var userRepository = new UserRepository(db);
+            var pushUpRecordRepository = new PushUpRecordRepository(db);
+
 
             var userService = new UserService(userRepository);
+            var pushUpRecordService = new PushUpRecordService(pushUpRecordRepository, userRepository);
             var authService = new AuthService(userRepository);
 
             var userController = new UserController(userService, authService);
+            var pushUpRecordController = new PushUpRecordController(pushUpRecordService);
             _authController = new AuthController(authService);
 
             AddRoute("POST", "/users", userController.RegisterAsync);
             AddRoute("POST", "/sessions", _authController.LoginAsync);
 
+            // Profile
             AddDynamicRoute("GET", "/users/{username}", userController.GetUserByUsernameAsync);
             AddDynamicRoute("PUT", "/users/{username}", userController.EditUserProfileAsync);
+
+            // History
+            AddRoute("GET", "/history", pushUpRecordController.GetHistoryByTokenHashAsync);
+            AddRouteWithToken("POST", "/history", pushUpRecordController.PostHistoryByTokenHashAsync);
         }
 
         public void AddRoute(string method, string path, Func<string, Task<string>> handler)
         {
-            _routes[(method, path)] = handler;
+            _routesSimple[(method, path)] = handler;
+        }
+
+        public void AddRouteWithToken(string method, string path, Func<string, string, Task<string>> handler)
+        {
+            _routesWithToken[(method, path)] = handler;
         }
 
         public void AddDynamicRoute(string method, string pattern, Func<string, string, Task<string>> handler)
@@ -46,11 +62,28 @@ namespace SportsBattleApp.Http
         {
             // Add functionality later -> users with tokens cannot use login or register
 
-            if (_routes.TryGetValue((method, path), out var handler))
+            if (_routesSimple.TryGetValue((method, path), out var simpleHandler) && (path == "/users" || path == "/sessions"))
             {
-                return await handler(body);
+                return await simpleHandler(body);
             }
-            
+
+            if (_routesWithToken.TryGetValue((method, path), out var tokenHandler))
+            {
+                if ((!header.TryGetValue("Authorization", out var token) || !await _authController.IsTokenValidAsync(token)))
+                {
+                    return JsonConvert.SerializeObject(new { error = "401 Unauthorized" });
+                }
+                return await tokenHandler(token, body);
+            }
+
+            if (_routesSimple.TryGetValue((method, path), out var tokenHandlerGet) && method == "GET")
+            {
+                if ((!header.TryGetValue("Authorization", out var token) || !await _authController.IsTokenValidAsync(token)))
+                {
+                    return JsonConvert.SerializeObject(new { error = "401 Unauthorized" });
+                }
+                return await tokenHandlerGet(token);
+            }
 
             foreach (var route in _dynamicRoutes)
             {
@@ -59,7 +92,7 @@ namespace SportsBattleApp.Http
                 {
                     var username = match.Groups[1].Value;
 
-                    if(!header.TryGetValue("Authorization", out var token) || !await _authController.IsTokenValidAsync(token, username))
+                    if(!header.TryGetValue("Authorization", out var token) || !await _authController.IsTokenValidAsync(token))
                     {
                         return JsonConvert.SerializeObject(new { error = "401 Unauthorized" });
                     }

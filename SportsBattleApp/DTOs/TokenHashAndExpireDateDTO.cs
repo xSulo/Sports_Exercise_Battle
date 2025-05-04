@@ -1,8 +1,8 @@
 ﻿namespace SportsBattleApp.DTOs
 {
-    public class TokenDataDTO
+    public class TokenHashAndExpireDateDTO
     {
         public string TokenHash { get; set; } = string.Empty;
-        public DateTime TokenExpireDate { get; set; }
+        public DateTime ExpireDate { get; set; }
     }
 }

@@ -18,7 +18,6 @@ namespace SportsBattleApp.Services
             try
             {
                 return await _userRepository.GetUserByUsernameAsync(username);
-
             }
             catch (Exception ex)
             {

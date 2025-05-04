@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Npgsql;
 using SportsBattleApp.Data;
 using SportsBattleApp.DTOs;
@@ -109,15 +110,16 @@ namespace SportsBattleApp.Repositories
             }
         }
 
-        public async Task<bool> UpdateTokenHashAsync(string username, string tokenHash, DateTime tokenExpiresAt)
+        //public async Task<bool> UpdateTokenHashAsync(string username, string tokenHash, DateTime tokenExpiresAt)
+        public async Task<bool> UpdateTokenHashAsync(string username, string tokenHash)
         {
-
-            string query = "UPDATE users SET token_hash = @tokenHash, token_expires_at = @tokenExpiresAt WHERE username = @username";
+            //string query = "UPDATE users SET token_hash = @tokenHash, token_expires_at = @tokenExpiresAt WHERE username = @username";
+            string query = "UPDATE users SET token_hash = @tokenHash WHERE username = @username";
             var parameters = new Dictionary<string, object>
             {
                 { "@username", username },
                 { "@tokenHash", tokenHash },
-                { "@tokenExpiresAt", tokenExpiresAt }
+                //{ "@tokenExpiresAt", tokenExpiresAt }
             };
 
             try
@@ -132,29 +134,29 @@ namespace SportsBattleApp.Repositories
             }
         }
 
-        public async Task<TokenDataDTO> GetTokenHashByUsernameAsync(string username)
+        public async Task<string> GetTokenHashByTokenHashAsync(string tokenHash)
         {
-            string query = "SELECT token_hash, token_expires_at FROM users WHERE username = @username";
+            string query = "SELECT token_hash FROM users WHERE token_hash = @tokenHash";
             var parameters = new Dictionary<string, object>
             {
-                { "@username", username }
+                { "@tokenHash", tokenHash }
             };
             try
             {
-                var result = await _db.ExecuteReaderAsync(query, parameters);
+                Console.WriteLine(tokenHash + "suiuiui");
+                var result = await _db.ExecuteScalarAsync(query, parameters);
+                Console.WriteLine(result + "suiuiui");
+                return result?.ToString();
 
-                if (result == null)
-                {
-                    return null;
-                }
-                var row = result[0];
-                var tokenData = new TokenDataDTO
-                {
-                    TokenHash = row["token_hash"].ToString(),
-                    TokenExpireDate = Convert.ToDateTime(row["token_expires_at"]),
-                };
-
-                return tokenData;
+                /* if (result == null)
+                 {
+                     return null;
+                 }*/
+                //Console.WriteLine(result["token_expires_at"] + "suiuiui");
+                //DateTime TokenExpireDate = Convert.ToDateTime(result);
+                ////Console.WriteLine(result + "suiuiui");
+                //Console.WriteLine(TokenExpireDate);
+                //return TokenExpireDate;
             }
             catch (Exception ex)
             {
@@ -170,8 +172,6 @@ namespace SportsBattleApp.Repositories
             var parameters = new Dictionary<string, object> { 
                 { "@usernameOld", username },
             };
-
-
 
             if (!string.IsNullOrEmpty(newUserData.Username))
             {
@@ -226,6 +226,30 @@ namespace SportsBattleApp.Repositories
             {
                 Console.WriteLine($"[UserRepository] Error in UpdateUserProfileAsync: {ex.Message}");
                 return false;
+            }
+        }
+
+        public async Task<int> GetUserIdByTokenHashAsync(string tokenHash)
+        {
+            string query = "SELECT id FROM users WHERE token_hash = @tokenHash";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@tokenHash", tokenHash }
+            };
+            Console.WriteLine($"[DEBUG] tokenHash: '{tokenHash}'");
+
+            int i = 0;
+            try
+            {
+                var result = await _db.ExecuteScalarAsync(query, parameters);
+
+                Console.Write(result);
+                return Convert.ToInt32(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UserRepository] Error in GetPasswordHashByUsername: {ex.Message}");
+                return i;
             }
         }
     }
