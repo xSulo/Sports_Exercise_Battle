@@ -42,13 +42,17 @@ namespace SportsBattleApp.Http
                 string method = request.HttpMethod;
                 string body = string.Empty;
 
+                var header = request.Headers.AllKeys
+                   .Where(k => k != null) 
+                   .ToDictionary(k => k!, k => request.Headers[k]!); 
+
                 if (request.HasEntityBody)
                 {
                     using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
                     body = await reader.ReadToEndAsync();
                 }
 
-                string result = await _router.RouteHttpRequestAsync(method, path, body);
+                string result = await _router.RouteHttpRequestAsync(method, path, body, header);
 
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(result);
                 response.ContentLength64 = buffer.Length;

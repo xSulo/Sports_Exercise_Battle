@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Npgsql;
 using SportsBattleApp.Data;
+using SportsBattleApp.DTOs;
 using SportsBattleApp.Models;
 
 namespace SportsBattleApp.Repositories
@@ -78,45 +79,39 @@ namespace SportsBattleApp.Repositories
             }
         }
 
-        //public async Task<User> GetUserAsync(string username, string passwordHash)
-        //{
-        //    string query = "SELECT * FROM users WHERE username = @username AND password_hash = @passwordHash";
-        //    var parameters = new Dictionary<string, object>
-        //    {
-        //        { "@username", username },
-        //        { "@passwordHash", passwordHash }
-        //    };
-
-        //    try
-        //    {
-        //        var result = await _db.ExecuteReaderAsync(query, parameters);
-
-        //        var row = result[0];
-
-
-        //        User newUser = new User();
-
-
-        //        //Id = Convert.ToInt32(row["id"]),
-        //        newUser.Username = row["username"].ToString();
-        //        newUser.SetPasswordHash(row["password_hash"].ToString());
-        //        newUser.Elo = Convert.ToInt32(row["elo"]);
-        //        newUser.SetTokenHash(row["token_hash"].ToString());
-        //        newUser.Image = row["image"].ToString();
-        //        newUser.Bio = row["bio"].ToString();
-
-        //        return newUser;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"[UserRepository] Error in GetUser: {ex.Message}");
-        //        return null;
-        //    }
-        //}
-
-        public async Task<bool> AddTokenHashAsync(string username, string tokenHash, DateTime tokenExpiresAt)
+        public async Task<UserProfileDTO> GetUserByUsernameAsync(string username)
         {
-         
+            string query = "SELECT * FROM users WHERE username = @username";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@username", username }
+            };
+
+            try
+            {
+                var result = await _db.ExecuteReaderAsync(query, parameters);
+                var row = result[0];
+
+                var userDto = new UserProfileDTO
+                {
+                    Username = row["username"].ToString(),
+                    Elo = Convert.ToInt32(row["elo"]),
+                    Image = row["image"].ToString(),
+                    Bio = row["bio"].ToString(),
+                    WinningSpeech = row["winning_speech"].ToString()
+                };
+                return userDto;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UserRepository] Error in GetUser: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<bool> UpdateTokenHashAsync(string username, string tokenHash, DateTime tokenExpiresAt)
+        {
+
             string query = "UPDATE users SET token_hash = @tokenHash, token_expires_at = @tokenExpiresAt WHERE username = @username";
             var parameters = new Dictionary<string, object>
             {
@@ -124,7 +119,6 @@ namespace SportsBattleApp.Repositories
                 { "@tokenHash", tokenHash },
                 { "@tokenExpiresAt", tokenExpiresAt }
             };
-            Console.WriteLine($"Token expires at: {tokenExpiresAt}");
 
             try
             {
@@ -134,6 +128,103 @@ namespace SportsBattleApp.Repositories
             catch (Exception ex)
             {
                 Console.WriteLine($"[UserRepository] Error in AddTokenHashsync: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<TokenDataDTO> GetTokenHashByUsernameAsync(string username)
+        {
+            string query = "SELECT token_hash, token_expires_at FROM users WHERE username = @username";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@username", username }
+            };
+            try
+            {
+                var result = await _db.ExecuteReaderAsync(query, parameters);
+
+                if (result == null)
+                {
+                    return null;
+                }
+                var row = result[0];
+                var tokenData = new TokenDataDTO
+                {
+                    TokenHash = row["token_hash"].ToString(),
+                    TokenExpireDate = Convert.ToDateTime(row["token_expires_at"]),
+                };
+
+                return tokenData;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UserRepository] Error in IsTokenValid: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<bool> UpdateUserProfileAsync(string username, User newUserData)
+        {
+
+            var setClauses = new List<string>();
+            var parameters = new Dictionary<string, object> { 
+                { "@usernameOld", username },
+            };
+
+
+
+            if (!string.IsNullOrEmpty(newUserData.Username))
+            {
+                setClauses.Add("username = @usernameNew");
+                parameters["@usernameNew"] = newUserData.Username;
+            }
+
+            if (!string.IsNullOrEmpty(newUserData.PasswordHash))
+            {
+                setClauses.Add("password_hash = @passwordHash");
+                parameters["@passwordHash"] = newUserData.PasswordHash;
+            }
+
+            if (!string.IsNullOrEmpty(newUserData.Bio))
+            {
+                setClauses.Add("bio = @bio");
+                parameters["@bio"] = newUserData.Bio;
+            }
+
+            if (!string.IsNullOrEmpty(newUserData.Image))
+            {
+                setClauses.Add("image = @image");
+                parameters["@image"] = newUserData.Image;
+            }
+
+            if (!string.IsNullOrEmpty(newUserData.WinningSpeech))
+            {
+                setClauses.Add("winning_speech = @winningSpeech");
+                parameters["@winningSpeech"] = newUserData.WinningSpeech;
+            }
+            setClauses.Add("token_hash = @tokenHash");
+            parameters["@tokenHash"] = DBNull.Value; ;
+
+            setClauses.Add("token_expires_at = @tokenExpireDate");
+            parameters["@tokenExpireDate"] = DBNull.Value;
+
+            if (setClauses.Count == 0)
+            {
+                Console.WriteLine("[UserRepository] No values provided to update.");
+                return false;
+            }
+
+            string setClause = string.Join(", ", setClauses);
+            string query = $"UPDATE users SET {setClause} WHERE username = @usernameOld";
+
+            try
+            {
+                await _db.ExecuteNonQueryAsync(query, parameters);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UserRepository] Error in UpdateUserProfileAsync: {ex.Message}");
                 return false;
             }
         }

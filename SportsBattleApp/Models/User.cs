@@ -27,6 +27,7 @@ namespace SportsBattleApp.Models
         public string? TokenHash { get; private set; }
         public string? Image { get; set; }
         public string? Bio { get; set; }
+        public string? WinningSpeech { get; set; }
         public DateTime? TokenExpiresAt { get; set; } 
 
         public User() { }
@@ -39,14 +40,13 @@ namespace SportsBattleApp.Models
         }
 
         // To retrieve data from the database
-        public User(string username, string passwordHash, int elo, string tokenHash, string image, string bio)
+        public User(string username, int elo, string? image, string? bio, string? winningSpeech)
         {
             Username = username;
-            PasswordHash = passwordHash;
             Elo = elo;
-            TokenHash = tokenHash;
             Image = image;
             Bio = bio;
+            WinningSpeech = winningSpeech;
         }
 
         public void SetPasswordHash(string passwordHash)
@@ -59,9 +59,9 @@ namespace SportsBattleApp.Models
             TokenHash = tokenHash;
         }
 
-        public void SetImage(UserImage newImage)
-        {
-            Image = newImage.ToString();
-        }
+        //public void SetImage(UserImage newImage)
+        //{
+        //    Image = newImage.ToString();
+        //}
     }
 }
