@@ -23,7 +23,7 @@ namespace SportsBattleApp.Http
             var pushUpRecordRepository = new PushUpRecordRepository(db);
 
             var hashingService = new HashingService();
-            var tokenService = new TokenService();
+            var tokenService = new TokenService(hashingService);
             var authService = new AuthService(userRepository, hashingService, tokenService);
             var userService = new UserService(userRepository, hashingService);
             var pushUpRecordService = new PushUpRecordService(pushUpRecordRepository, userRepository, authService);
@@ -39,7 +39,7 @@ namespace SportsBattleApp.Http
             AddRoute("POST", "/sessions", _authController.LoginAsync);
 
             // Profile
-            AddDynamicRoute("GET", "/users/{username}", userController.GetUserByUsernameAsync);
+            AddDynamicRoute("GET", "/users/{username}", userController.GetUserProfileByUsernameAsync);
             AddDynamicRoute("PUT", "/users/{username}", userController.EditUserProfileAsync);
 
             // History

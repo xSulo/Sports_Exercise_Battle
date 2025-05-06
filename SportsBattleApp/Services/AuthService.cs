@@ -19,6 +19,8 @@ namespace SportsBattleApp.Services
             _tokenService = tokenService;
         }
 
+
+        // POST for /sessions aka login, in order to login a user, also creates a token
         public async Task<bool> LoginAsync(string username, string plainPassword)
         {
             try
@@ -48,6 +50,7 @@ namespace SportsBattleApp.Services
             }
         }
 
+        // POST for /users aka register, in order to register a new user
         public async Task<bool> RegisterAsync(string username, string plainPassword)
         {
             try
@@ -68,6 +71,7 @@ namespace SportsBattleApp.Services
             }
         }
 
+        // Used everytime there is a request, checks if the token is valid
         public async Task<bool> IsTokenValidAsync(string token)
         {
             try
@@ -79,23 +83,14 @@ namespace SportsBattleApp.Services
                     return false;
                 }
 
-                foreach(var storedToken in storedTokenList)
+                var result = _tokenService.ValidateToken(token, storedTokenList, false);
+
+                if (result.IsValid)
                 {
-                    string tokenWithoutPrefix = _tokenService.RemoveTokenPrefix(token);
-                    bool isTokenValid = _hashingService.VerifyHash(tokenWithoutPrefix, storedToken.TokenHash);
-
-                    if (isTokenValid)
-                    {
-                        if (storedToken.ExpireDate < DateTime.UtcNow)
-                        {
-                            throw new InvalidOperationException("Token expired. Login in order to get a new token.");
-                        }
-
-                        return true;
-                    }
+                    return true;
                 }
-                
-                throw new InvalidOperationException("Token not found.");
+
+                return false;
             }
             catch (Exception ex)
             {
@@ -104,26 +99,27 @@ namespace SportsBattleApp.Services
             }
         }
 
-        public int ValidateTokenDataAndGetUserId(string token, List<TokenDataAndUserIdDTO> TokenAndUserData)
+        // Used by various services to get the userId from the token
+        public async Task<int> ValidateTokenDataAndGetUserId(string token)
         {
             try
             {
-                foreach (var data in TokenAndUserData)
+                var storedTokenList = await _userRepository.GetTokenDataAsync();
+
+                if (storedTokenList == null || storedTokenList.Count == 0)
                 {
-                    string tokenWithoutPrefix = _tokenService.RemoveTokenPrefix(token);
-                    bool isTokenValid = _hashingService.VerifyHash(tokenWithoutPrefix, data.TokenHash);
-
-                    if (isTokenValid)
-                    {
-                        if (data.ExpireDate < DateTime.UtcNow)
-                        {
-                            throw new InvalidOperationException("Token expired. Login in order to get a new token.");
-                        }
-
-                        return data.UserId;
-                    }
+                    return 0;
                 }
-                throw new InvalidOperationException("Token invalid.");
+
+                var result = _tokenService.ValidateToken(token, storedTokenList, true);
+
+                if (!result.IsValid)
+                {
+                    return 0;
+                }
+
+                return await _userRepository.GetUserIdByTokenHashAsync(result.TokenHash);
+
             }
             catch (Exception ex)
             {

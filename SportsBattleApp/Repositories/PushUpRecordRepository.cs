@@ -17,7 +17,8 @@ namespace SportsBattleApp.Repositories
             _db = db;
         }
 
-        public async Task<List<PushUpRecordGetHistoryDTO>> GetHistoryByUserIdAsync(int userId)
+        // GET for /history, in order to view users entire history
+        public async Task<List<PushUpRecordGetHistoryDTO>> GetHistoryByUserIdAsync(int? userId)
         {
             string query = "SELECT count, duration FROM history WHERE user_id = @userId";
             var parameters = new Dictionary<string, object>
@@ -53,6 +54,7 @@ namespace SportsBattleApp.Repositories
             }
         }
 
+        // POST for /history, in order to add a new record to the history
         public async Task<bool> PostHistoryByUserIdAsync(int userId, PushUpRecordPostHistoryDTO data)
         {
             string query = "INSERT INTO history (user_id, tournament_number, name, count, duration) VALUES (@userId, @tournamentNumber, @name, @count, @duration)";
@@ -76,7 +78,9 @@ namespace SportsBattleApp.Repositories
                 return false;
             }
         }
-        public async Task<int?> GetTotalCountByUserIdAsync(int userId)
+
+        // GET for /stats, in order to view user stats, this is used to get the total amount of push-ups
+        public async Task<int?> GetTotalCountByUserIdAsync(int? userId)
         {
             string query = "SELECT SUM(count) AS total_count FROM history WHERE user_id = @userId";
             var parameters = new Dictionary<string, object>

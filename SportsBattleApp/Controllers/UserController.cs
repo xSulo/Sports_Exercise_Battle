@@ -13,25 +13,29 @@ namespace SportsBattleApp.Controllers
             _userService = userService;
         }
 
-        public async Task<string> GetUserByUsernameAsync(string username, string body)
+        // GET for /users/{username} aka profile, in order to view the profile
+        public async Task<string> GetUserProfileByUsernameAsync(string username, string body)
         {
             try
             {
-                var user = await _userService.GetUserByUsernameAsync(username);
+                var user = await _userService.GetUserProfileByUsernameAsync(username);
 
                 if (user == null)
                 {
                     return JsonConvert.SerializeObject(new { success = false, error = "User not found." });
                 }
+
+                Console.WriteLine($"[UserController] Getting user profile was successful!");
                 return JsonConvert.SerializeObject(new { success = true, user});
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[UserController] Error during Register: {ex.Message}");
+                Console.WriteLine($"[UserController] Error during GetUserByUsernameAsync: {ex.Message}");
                 return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
             }
         }
 
+        // PUT for /users/{username} aka profile, in order to change profile
         public async Task<string> EditUserProfileAsync(string username, string body)
         {
             try
@@ -43,11 +47,17 @@ namespace SportsBattleApp.Controllers
                 }
 
                 bool success = await _userService.EditUserProfileAsync(username, data);
-                return JsonConvert.SerializeObject(new { success });
+
+                if (success)
+                {
+                    Console.WriteLine($"[UserController] Updating user profile was successful!");
+                }
+
+                return JsonConvert.SerializeObject(new { success, message = $"User {username} was successfully updated." });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[UserController] Error during Register: {ex.Message}");
+                Console.WriteLine($"[UserController] Error during EditUserProfileAsync: {ex.Message}");
                 return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
             }
         }

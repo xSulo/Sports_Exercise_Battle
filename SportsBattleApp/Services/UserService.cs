@@ -16,6 +16,21 @@ namespace SportsBattleApp.Services
             _hashingService = hashingService;
         }
 
+        // GET for /users/{username} aka profile, in order to view the profile
+        public async Task<UserProfileDTO> GetUserProfileByUsernameAsync(string username)
+        {
+            try
+            {
+                return await _userRepository.GetUserProfileByUsernameAsync(username);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UserService] Error during GetUserByUsernameAsync: {ex.Message}");
+                return null;
+            }
+        }
+
+        // PUT for /users/{username} aka profile, in order to change profile
         public async Task<bool> EditUserProfileAsync(string username, User newUserData)
         {
             try
@@ -27,25 +42,11 @@ namespace SportsBattleApp.Services
                 }
 
                 return await _userRepository.UpdateUserProfileAsync(username, newUserData);
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[AuthService] Error during Updating User Profile: {ex.Message}");
+                Console.WriteLine($"[UserService] Error during EditUserProfileAsync: {ex.Message}");
                 return false;
-            }
-        }
-
-        public async Task<UserProfileDTO> GetUserByUsernameAsync(string username)
-        {
-            try
-            {
-                return await _userRepository.GetUserByUsernameAsync(username);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[UserService] Error during Register: {ex.Message}");
-                return null;
             }
         }
     }

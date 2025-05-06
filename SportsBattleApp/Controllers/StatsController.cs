@@ -12,6 +12,7 @@ namespace SportsBattleApp.Controllers
             _statsService = statsService;
         }
 
+        // GET for /stats, in order to view user stats
         public async Task<string> GetStatsByTokenAsync(string header)
         {
             try
@@ -21,11 +22,13 @@ namespace SportsBattleApp.Controllers
                 {
                     return JsonConvert.SerializeObject(new { success = false, error = "No stats found." });
                 }
+
+                Console.WriteLine($"[UserController] Getting user stats was successful!");
                 return JsonConvert.SerializeObject(new { success = true, stats });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[PushUpRecordController] Error during GetStatsyByTokenAsync: {ex.Message}");
+                Console.WriteLine($"[StatsController] Error during GetStatsByTokenAsync: {ex.Message}");
                 return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
             }
         }
