@@ -149,7 +149,21 @@ namespace SportsBattleApp.Repositories
 
                 foreach (var row in results)
                 {
-                    TokenList.Add(new TokenHashAndExpireDateDTO
+                    if (row == null)
+                    {
+                        continue;
+                    }
+
+                    var tokenHash = row["token_hash"]?.ToString();
+                    var expireDateValue = row["token_expires_at"];
+
+                    if (string.IsNullOrEmpty(tokenHash) || expireDateValue == DBNull.Value)
+                    {
+                        continue;
+                    }
+
+
+                        TokenList.Add(new TokenHashAndExpireDateDTO
                     {
                         TokenHash = row["token_hash"].ToString(),
                         ExpireDate = Convert.ToDateTime(row["token_expires_at"])

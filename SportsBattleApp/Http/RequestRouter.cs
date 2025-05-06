@@ -22,17 +22,20 @@ namespace SportsBattleApp.Http
             var userRepository = new UserRepository(db);
             var pushUpRecordRepository = new PushUpRecordRepository(db);
 
-            var authService = new AuthService(userRepository);
-            var userService = new UserService(userRepository);
+            var hashingService = new HashingService();
+            var tokenService = new TokenService();
+            var authService = new AuthService(userRepository, hashingService, tokenService);
+            var userService = new UserService(userRepository, hashingService);
             var pushUpRecordService = new PushUpRecordService(pushUpRecordRepository, userRepository, authService);
             var statsService = new StatsService(userRepository, pushUpRecordRepository, authService);
 
-            var userController = new UserController(userService, authService);
+            var userController = new UserController(userService);
             var pushUpRecordController = new PushUpRecordController(pushUpRecordService);
             var statsController = new StatsController(statsService);
             _authController = new AuthController(authService);
 
-            AddRoute("POST", "/users", userController.RegisterAsync);
+            //Login and Register
+            AddRoute("POST", "/users", _authController.RegisterAsync);
             AddRoute("POST", "/sessions", _authController.LoginAsync);
 
             // Profile
