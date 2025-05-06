@@ -17,9 +17,9 @@ namespace SportsBattleApp.Repositories
             _db = db;
         }
 
-        public async Task<PushUpRecordGetHistoryDTO> GetHistoryByUserIdAsync(int userId)
+        public async Task<List<PushUpRecordGetHistoryDTO>> GetHistoryByUserIdAsync(int userId)
         {
-            string query = "SELECT SUM(count) AS total_count, SUM(duration) AS total_duration FROM history WHERE user_id = @userId";
+            string query = "SELECT count, duration FROM history WHERE user_id = @userId";
             var parameters = new Dictionary<string, object>
             {
                 { "@userId", userId }
@@ -27,13 +27,22 @@ namespace SportsBattleApp.Repositories
             try
             {
                 var result = await _db.ExecuteReaderAsync(query, parameters);
-                var row = result[0];
 
-                var totalRecord = new PushUpRecordGetHistoryDTO
+                if (result == null || result.Count == 0)
                 {
-                    TotalCount = Convert.ToInt32(row["total_count"]),
-                    TotalDurationInSeconds = Convert.ToInt32(row["total_duration"])
-                };
+                    return null;
+                }
+
+                var totalRecord = new List<PushUpRecordGetHistoryDTO>();
+
+                foreach (var row in result)
+                {
+                    totalRecord.Add(new PushUpRecordGetHistoryDTO
+                    {
+                        PushUpCount = Convert.ToInt32(row["count"]),
+                        DurationInSeconds = Convert.ToInt32(row["duration"])
+                    });
+                }
 
                 return totalRecord;
             }
@@ -65,6 +74,30 @@ namespace SportsBattleApp.Repositories
             {
                 Console.WriteLine($"[PushUpRecordRepository] Error in PostHistoryByTokenHash: {ex.Message}");
                 return false;
+            }
+        }
+        public async Task<int?> GetTotalCountByUserIdAsync(int userId)
+        {
+            string query = "SELECT SUM(count) AS total_count FROM history WHERE user_id = @userId";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@userId", userId }
+            };
+            try
+            {
+                var result = await _db.ExecuteScalarAsync(query, parameters);
+
+                if (result == null)
+                {
+                    return null;
+                }
+
+                return Convert.ToInt32(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[PushUpRecordRepository] Error in GetTotalCountByUserIdAsync: {ex.Message}");
+                return null;
             }
         }
     }

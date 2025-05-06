@@ -262,5 +262,32 @@ namespace SportsBattleApp.Repositories
                 return null;
             }
         }
+
+        public async Task<int?> GetEloByUserIdAsync(int userId)
+        {
+            string query = "SELECT elo FROM users WHERE id = @userId";
+
+            var parameters = new Dictionary<string, object>
+            {
+                { "@userID", userId }
+            };
+
+            try
+            {
+                var result = await _db.ExecuteScalarAsync(query, parameters);
+
+                if (result == null)
+                {
+                    return null;
+                }
+
+                return Convert.ToInt32(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UserRepository] Error in GetEloByUserIdAsync: {ex.Message}");
+                return null;
+            }
+        }
     }
 }

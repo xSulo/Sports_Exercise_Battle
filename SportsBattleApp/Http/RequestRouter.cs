@@ -22,13 +22,14 @@ namespace SportsBattleApp.Http
             var userRepository = new UserRepository(db);
             var pushUpRecordRepository = new PushUpRecordRepository(db);
 
-
-            var userService = new UserService(userRepository);
             var authService = new AuthService(userRepository);
+            var userService = new UserService(userRepository);
             var pushUpRecordService = new PushUpRecordService(pushUpRecordRepository, userRepository, authService);
+            var statsService = new StatsService(userRepository, pushUpRecordRepository, authService);
 
             var userController = new UserController(userService, authService);
             var pushUpRecordController = new PushUpRecordController(pushUpRecordService);
+            var statsController = new StatsController(statsService);
             _authController = new AuthController(authService);
 
             AddRoute("POST", "/users", userController.RegisterAsync);
@@ -41,6 +42,9 @@ namespace SportsBattleApp.Http
             // History
             AddRoute("GET", "/history", pushUpRecordController.GetHistoryByTokenAsync);
             AddRouteWithToken("POST", "/history", pushUpRecordController.PostHistoryByTokenAsync);
+
+            // Stats
+            AddRoute("GET", "/stats", statsController.GetStatsByTokenAsync);
         }
 
         public void AddRoute(string method, string path, Func<string, Task<string>> handler)

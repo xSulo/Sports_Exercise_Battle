@@ -16,7 +16,7 @@ namespace SportsBattleApp.Services
             _userRepository = userRepository;
             _authService = authService;
         }
-        public async Task<PushUpRecordGetHistoryDTO> GetHistoryByUserIdAsync(string token)
+        public async Task<List<PushUpRecordGetHistoryDTO>> GetHistoryByUserIdAsync(string token)
         {
             try
             {
