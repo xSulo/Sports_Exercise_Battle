@@ -66,16 +66,11 @@ namespace SportsBattleApp.Services
         {
             try
             {
-                if (token.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
-                {
-                    token = token.Substring("Basic ".Length + 1);
-                }
-                
-                var storedTokenList = await _userRepository.GetTokenDataAsync();
+                 var storedTokenList = await _userRepository.GetTokenDataAsync();
 
                 foreach(var storedToken in storedTokenList)
                 {
-                    if (VerifyHash(token, storedToken.TokenHash))
+                    if (VerifyHash(RemoveTokenPrefix(token), storedToken.TokenHash))
                     {
                         if (storedToken.ExpireDate < DateTime.UtcNow)
                         {
@@ -114,33 +109,43 @@ namespace SportsBattleApp.Services
             }
         }
 
-        public async Task<int?> ValidateTokenDataAndGetUserId(string token, List<TokenDataAndUserIdDTO> TokenAndUserData)
+        public int ValidateTokenDataAndGetUserId(string token, List<TokenDataAndUserIdDTO> TokenAndUserData)
         {
             try
             {
                 foreach (var data in TokenAndUserData)
                 {
-                    if (VerifyHash(token, storedToken.TokenHash))
+                    if (VerifyHash(RemoveTokenPrefix(token), data.TokenHash))
                     {
-                        if (storedToken.ExpireDate < DateTime.UtcNow)
+                        if (data.ExpireDate < DateTime.UtcNow)
                         {
                             throw new InvalidOperationException("Token expired. Login in order to get a new token.");
                         }
 
-                        return true;
+                        return data.UserId;
                     }
                 }
+                throw new InvalidOperationException("Token invalid.");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[AuthService] Error during Validating of token data: {ex.Message}");
-                return null;
+                return 0;
             }
         }
 
         private static string HashValue(string plainTextValue)
         {
             return BCrypt.Net.BCrypt.HashPassword(plainTextValue);
+        }
+
+        private static string RemoveTokenPrefix(string token)
+        {
+            if (token.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
+            {
+                return token.Substring("Basic ".Length + 1);
+            }
+            return token;
         }
 
         private static string CreateTokenHash(string username)

@@ -1,4 +1,5 @@
-﻿using SportsBattleApp.DTOs;
+﻿using Newtonsoft.Json.Linq;
+using SportsBattleApp.DTOs;
 using SportsBattleApp.Models;
 using SportsBattleApp.Repositories;
 
@@ -15,11 +16,15 @@ namespace SportsBattleApp.Services
             _userRepository = userRepository;
             _authService = authService;
         }
-        public async Task<PushUpRecordGetHistoryDTO> GetHistoryByTokenHashAsync(string tokenHash)
+        public async Task<PushUpRecordGetHistoryDTO> GetHistoryByUserIdAsync(string token)
         {
             try
             {
-                return await _pushUpRecordRepository.GetHistoryByTokenHashAsync(tokenHash);
+                var TokenDataAndUserId = await _userRepository.GetTokenDataAndUserIdAsync();
+
+                int userId = _authService.ValidateTokenDataAndGetUserId(token, TokenDataAndUserId);
+
+                return await _pushUpRecordRepository.GetHistoryByUserIdAsync(userId);
             }
             catch (Exception ex)
             {
@@ -28,17 +33,21 @@ namespace SportsBattleApp.Services
             }
         }
 
-        public async Task<bool> PostHistoryByTokenHashAsync(string tokenHash, PushUpRecordPostHistoryDTO pushUpRecord)
+        public async Task<bool> PostHistoryByUserIdAsync(string token, PushUpRecordPostHistoryDTO pushUpRecord)
         {
             try
             {
-                var userId = await _userRepository.GetTokenDataAndUserIdAsync();
+                var TokenDataAndUserId = await _userRepository.GetTokenDataAndUserIdAsync();
 
-                int userId2 = Convert.ToInt32(userId);
 
-                //if (userId == 0) return false;
+                int userId = _authService.ValidateTokenDataAndGetUserId(token, TokenDataAndUserId);
 
-                return await _pushUpRecordRepository.PostHistoryByTokenHashAsync(userId2, tokenHash, pushUpRecord);
+                if (userId == 0)
+                {
+                    return false;
+                }
+
+                return await _pushUpRecordRepository.PostHistoryByUserIdAsync(userId, pushUpRecord);
             }
             catch (Exception ex)
             {

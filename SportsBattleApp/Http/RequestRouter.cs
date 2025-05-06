@@ -39,8 +39,8 @@ namespace SportsBattleApp.Http
             AddDynamicRoute("PUT", "/users/{username}", userController.EditUserProfileAsync);
 
             // History
-            AddRoute("GET", "/history", pushUpRecordController.GetHistoryByTokenHashAsync);
-            AddRouteWithToken("POST", "/history", pushUpRecordController.PostHistoryByTokenHashAsync);
+            AddRoute("GET", "/history", pushUpRecordController.GetHistoryByTokenAsync);
+            AddRouteWithToken("POST", "/history", pushUpRecordController.PostHistoryByTokenAsync);
         }
 
         public void AddRoute(string method, string path, Func<string, Task<string>> handler)

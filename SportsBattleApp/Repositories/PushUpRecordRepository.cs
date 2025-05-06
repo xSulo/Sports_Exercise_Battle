@@ -17,12 +17,12 @@ namespace SportsBattleApp.Repositories
             _db = db;
         }
 
-        public async Task<PushUpRecordGetHistoryDTO> GetHistoryByTokenHashAsync(string tokenHash)
+        public async Task<PushUpRecordGetHistoryDTO> GetHistoryByUserIdAsync(int userId)
         {
-            string query = "SELECT SUM(count), SUM(duration) FROM history INNER JOIN users u ON u.token_hash = @tokenHash";
+            string query = "SELECT SUM(count) AS total_count, SUM(duration) AS total_duration FROM history WHERE user_id = @userId";
             var parameters = new Dictionary<string, object>
             {
-                { "@tokenHash", tokenHash }
+                { "@userId", userId }
             };
             try
             {
@@ -31,8 +31,8 @@ namespace SportsBattleApp.Repositories
 
                 var totalRecord = new PushUpRecordGetHistoryDTO
                 {
-                    TotalCount = Convert.ToInt32(row["count"]),
-                    TotalDurationInSeconds = Convert.ToInt32(row["duration"])
+                    TotalCount = Convert.ToInt32(row["total_count"]),
+                    TotalDurationInSeconds = Convert.ToInt32(row["total_duration"])
                 };
 
                 return totalRecord;
@@ -44,19 +44,16 @@ namespace SportsBattleApp.Repositories
             }
         }
 
-        public async Task<bool> PostHistoryByTokenHashAsync(int userId, string tokenHash, PushUpRecordPostHistoryDTO data)
+        public async Task<bool> PostHistoryByUserIdAsync(int userId, PushUpRecordPostHistoryDTO data)
         {
-            Console.WriteLine($"[PushUpRecordRepository] PostHistoryByTokenHashAsync: userId={userId}, tokenHash={tokenHash}, name={data.Name}, count={data.Count}, duration={data.DurationInSeconds}");
-
             string query = "INSERT INTO history (user_id, tournament_number, name, count, duration) VALUES (@userId, @tournamentNumber, @name, @count, @duration)";
             var parameters = new Dictionary<string, object>
             {
                 { "@userId", userId },
-                { "@tournamentNumber", 0 },
+                { "@tournamentNumber", 0 }, // Implement later with tcp
                 { "@name", data.Name },
                 { "@count", data.Count },
-                { "@duration", data.DurationInSeconds },
-                { "@tokenHash", tokenHash }
+                { "@duration", data.DurationInSeconds }
             };
 
             try
