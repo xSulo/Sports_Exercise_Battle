@@ -16,13 +16,14 @@ namespace SportsBattleApp.Services
             _authService = authService;
         }
 
+        // GET for /stats, in order to view user stats
         public async Task<GetStatsDTO> GetStatsByUserIdAsync(string token)
         {
             try
             {
                 var TokenDataAndUserId = await _userRepository.GetTokenDataAndUserIdAsync();
 
-                int userId = _authService.ValidateTokenDataAndGetUserId(token, TokenDataAndUserId);
+                int? userId = await _authService.ValidateTokenDataAndGetUserId(token);
 
                 var stats = new GetStatsDTO()
                 {

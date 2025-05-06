@@ -10,12 +10,18 @@ namespace SportsBattleApp.Services
     public class AuthService
     {
         private readonly UserRepository _userRepository;
-        public AuthService(UserRepository userRepository)
+        private readonly HashingService _hashingService;
+        private readonly TokenService _tokenService;
+        public AuthService(UserRepository userRepository, HashingService hashingfunction, TokenService tokenService)
         {
             _userRepository = userRepository;
+            _hashingService = hashingfunction;
+            _tokenService = tokenService;
         }
 
-        public async Task<bool> LoginAsync(string username, string passwordHash)
+
+        // POST for /sessions aka login, in order to login a user, also creates a token
+        public async Task<bool> LoginAsync(string username, string plainPassword)
         {
             try
             {
@@ -25,14 +31,15 @@ namespace SportsBattleApp.Services
                     throw new InvalidOperationException("User does not exist.");
                 }
 
-                if (!VerifyHash(passwordHash, storedPasswordHash))
+                bool isPasswordValid = _hashingService.VerifyHash(plainPassword, storedPasswordHash);
+                if (!isPasswordValid)
                 {
                     throw new InvalidOperationException("Invalid password.");
                 }
 
-                string tokenHash = CreateTokenHash(username);
-                //string token = CreateToken(username);
-                DateTime expireDateToken = CreateTokenExpiraryDate();
+                string token = _tokenService.CreateToken(username);
+                string tokenHash = _hashingService.HashValue(token);
+                DateTime expireDateToken = _tokenService.CreateTokenExpiraryDate();
 
                 return await _userRepository.UpdateTokenHashAsync(username, tokenHash, expireDateToken);
             }
@@ -43,7 +50,8 @@ namespace SportsBattleApp.Services
             }
         }
 
-        public async Task<bool> RegisterAsync(string username, string passwordHash)
+        // POST for /users aka register, in order to register a new user
+        public async Task<bool> RegisterAsync(string username, string plainPassword)
         {
             try
             {
@@ -51,8 +59,9 @@ namespace SportsBattleApp.Services
                 {
                     throw new InvalidOperationException("Username already taken");
                 }
-                
-                return await _userRepository.RegisterAsync(username, HashValue(passwordHash));
+
+                string passwordHash = _hashingService.HashValue(plainPassword);
+                return await _userRepository.RegisterAsync(username, passwordHash);
 
             }
             catch (Exception ex)
@@ -62,26 +71,26 @@ namespace SportsBattleApp.Services
             }
         }
 
+        // Used everytime there is a request, checks if the token is valid
         public async Task<bool> IsTokenValidAsync(string token)
         {
             try
             {
                  var storedTokenList = await _userRepository.GetTokenDataAsync();
 
-                foreach(var storedToken in storedTokenList)
+                if (storedTokenList == null || storedTokenList.Count == 0)
                 {
-                    if (VerifyHash(RemoveTokenPrefix(token), storedToken.TokenHash))
-                    {
-                        if (storedToken.ExpireDate < DateTime.UtcNow)
-                        {
-                            throw new InvalidOperationException("Token expired. Login in order to get a new token.");
-                        }
-
-                        return true;
-                    }
+                    return false;
                 }
-                
-                throw new InvalidOperationException("Token not found.");
+
+                var result = _tokenService.ValidateToken(token, storedTokenList, false);
+
+                if (result.IsValid)
+                {
+                    return true;
+                }
+
+                return false;
             }
             catch (Exception ex)
             {
@@ -90,77 +99,33 @@ namespace SportsBattleApp.Services
             }
         }
 
-        public async Task<bool> EditUserProfileAsync(string username, User newUserData)
+        // Used by various services to get the userId from the token
+        public async Task<int> ValidateTokenDataAndGetUserId(string token)
         {
             try
             {
-                if (!string.IsNullOrEmpty(newUserData.PasswordHash))
+                var storedTokenList = await _userRepository.GetTokenDataAsync();
+
+                if (storedTokenList == null || storedTokenList.Count == 0)
                 {
-                    newUserData.SetPasswordHash(HashValue(newUserData.PasswordHash));
+                    return 0;
                 }
 
-                return await _userRepository.UpdateUserProfileAsync(username, newUserData);
+                var result = _tokenService.ValidateToken(token, storedTokenList, true);
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[AuthService] Error during Updating User Profile: {ex.Message}");
-                return false;
-            }
-        }
-
-        public int ValidateTokenDataAndGetUserId(string token, List<TokenDataAndUserIdDTO> TokenAndUserData)
-        {
-            try
-            {
-                foreach (var data in TokenAndUserData)
+                if (!result.IsValid)
                 {
-                    if (VerifyHash(RemoveTokenPrefix(token), data.TokenHash))
-                    {
-                        if (data.ExpireDate < DateTime.UtcNow)
-                        {
-                            throw new InvalidOperationException("Token expired. Login in order to get a new token.");
-                        }
-
-                        return data.UserId;
-                    }
+                    return 0;
                 }
-                throw new InvalidOperationException("Token invalid.");
+
+                return await _userRepository.GetUserIdByTokenHashAsync(result.TokenHash);
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[AuthService] Error during Validating of token data: {ex.Message}");
                 return 0;
             }
-        }
-
-        private static string HashValue(string plainTextValue)
-        {
-            return BCrypt.Net.BCrypt.HashPassword(plainTextValue);
-        }
-
-        private static string RemoveTokenPrefix(string token)
-        {
-            if (token.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
-            {
-                return token.Substring("Basic ".Length + 1);
-            }
-            return token;
-        }
-
-        private static string CreateTokenHash(string username)
-        {
-            return HashValue($"{username}-sebToken");
-        }
-
-        private static DateTime CreateTokenExpiraryDate()
-        {
-            return DateTime.UtcNow.AddHours(3);
-        }
-
-        private bool VerifyHash(string plainText, string Hash)
-        {
-            return BCrypt.Net.BCrypt.Verify(plainText, Hash);
         }
     }
 }

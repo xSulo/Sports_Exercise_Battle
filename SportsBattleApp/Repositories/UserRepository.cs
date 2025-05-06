@@ -53,7 +53,7 @@ namespace SportsBattleApp.Repositories
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[UserRepository] Error in CreateUser: {ex.Message}");
+                Console.WriteLine($"[UserRepository] Error in RegisterAsync: {ex.Message}");
                 return false;
             }
         }
@@ -75,12 +75,13 @@ namespace SportsBattleApp.Repositories
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[UserRepository] Error in GetPasswordHashByUsername: {ex.Message}");
+                Console.WriteLine($"[UserRepository] Error in GetPasswordHashByUsernameAsync: {ex.Message}");
                 return null;
             }
         }
 
-        public async Task<UserProfileDTO> GetUserByUsernameAsync(string username)
+        // GET for /users/{username} aka profile, in order to view the profile
+        public async Task<UserProfileDTO> GetUserProfileByUsernameAsync(string username)
         {
             string query = "SELECT * FROM users WHERE username = @username";
             var parameters = new Dictionary<string, object>
@@ -105,11 +106,12 @@ namespace SportsBattleApp.Repositories
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[UserRepository] Error in GetUser: {ex.Message}");
+                Console.WriteLine($"[UserRepository] Error in GetUserProfileByUsernameAsync: {ex.Message}");
                 return null;
             }
         }
 
+        
         public async Task<bool> UpdateTokenHashAsync(string username, string tokenHash, DateTime tokenExpiresAt)
         {
             string query = "UPDATE users SET token_hash = @tokenHash, token_expires_at = @tokenExpiresAt WHERE username = @username";
@@ -127,11 +129,12 @@ namespace SportsBattleApp.Repositories
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[UserRepository] Error in AddTokenHashsync: {ex.Message}");
+                Console.WriteLine($"[UserRepository] Error in UpdateTokenHashAsync: {ex.Message}");
                 return false;
             }
         }
 
+        // Is used to check the token in case only the token is provided
         public async Task<List<TokenHashAndExpireDateDTO>> GetTokenDataAsync()
         {
             string query = "SELECT token_expires_at, token_hash FROM users";
@@ -149,9 +152,22 @@ namespace SportsBattleApp.Repositories
 
                 foreach (var row in results)
                 {
+                    if (row == null)
+                    {
+                        continue;
+                    }
+
+                    var tokenHash = row["token_hash"]?.ToString();
+                    var expireDateValue = row["token_expires_at"];
+
+                    if (string.IsNullOrEmpty(tokenHash) || expireDateValue == DBNull.Value)
+                    {
+                        continue;
+                    }
+
                     TokenList.Add(new TokenHashAndExpireDateDTO
                     {
-                        TokenHash = row["token_hash"].ToString(),
+                        TokenHash = tokenHash,
                         ExpireDate = Convert.ToDateTime(row["token_expires_at"])
                     });
                 }
@@ -165,6 +181,7 @@ namespace SportsBattleApp.Repositories
             }
         }
 
+        // PUT for /users/{username} aka profile, in order to change profile
         public async Task<bool> UpdateUserProfileAsync(string username, User newUserData)
         {
 
@@ -263,7 +280,8 @@ namespace SportsBattleApp.Repositories
             }
         }
 
-        public async Task<int?> GetEloByUserIdAsync(int userId)
+        // GET for /stats, in order to view user stats, this is used to get the elo of an user
+        public async Task<int?> GetEloByUserIdAsync(int? userId)
         {
             string query = "SELECT elo FROM users WHERE id = @userId";
 
@@ -287,6 +305,34 @@ namespace SportsBattleApp.Repositories
             {
                 Console.WriteLine($"[UserRepository] Error in GetEloByUserIdAsync: {ex.Message}");
                 return null;
+            }
+        }
+
+        // Used by authService to get the userId by tokenHash
+        public async Task<int> GetUserIdByTokenHashAsync(string tokenHash)
+        {
+            string query = "SELECT id FROM users WHERE token_hash = @tokenHash";
+
+            var parameters = new Dictionary<string, object>
+            {
+                { "@tokenHash", tokenHash }
+            };
+
+            try
+            {
+                var result = await _db.ExecuteScalarAsync(query, parameters);
+
+                if (result == null)
+                {
+                    return 0;
+                }
+
+                return Convert.ToInt32(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UserRepository] Error in GetUserIdByTokenHsahAsync: {ex.Message}");
+                return 0;
             }
         }
     }

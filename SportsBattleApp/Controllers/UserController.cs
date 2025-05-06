@@ -7,53 +7,35 @@ namespace SportsBattleApp.Controllers
     public class UserController
     {
         private readonly UserService _userService;
-        private readonly AuthService _authService;
 
-        public UserController(UserService userService, AuthService authService)
+        public UserController(UserService userService)
         {
             _userService = userService;
-            _authService = authService;
         }
 
-        public async Task<string> RegisterAsync(string body)
+        // GET for /users/{username} aka profile, in order to view the profile
+        public async Task<string> GetUserProfileByUsernameAsync(string username, string body)
         {
             try
             {
-                var  data = JsonConvert.DeserializeObject<User>(body);
-                if (data == null || string.IsNullOrWhiteSpace(data.Username) || string.IsNullOrWhiteSpace(data.PasswordHash))
-                {
-                    return JsonConvert.SerializeObject(new { success = false, error = "Invalid input." });
-                }
-                
-                bool success = await _authService.RegisterAsync(data.Username, data.PasswordHash);
-                return JsonConvert.SerializeObject(new { success });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[UserController] Error during Register: {ex.Message}");
-                return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
-            }
-        }
-
-        public async Task<string> GetUserByUsernameAsync(string username, string body)
-        {
-            try
-            {
-                var user = await _userService.GetUserByUsernameAsync(username);
+                var user = await _userService.GetUserProfileByUsernameAsync(username);
 
                 if (user == null)
                 {
                     return JsonConvert.SerializeObject(new { success = false, error = "User not found." });
                 }
+
+                Console.WriteLine($"[UserController] Getting user profile was successful!");
                 return JsonConvert.SerializeObject(new { success = true, user});
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[UserController] Error during Register: {ex.Message}");
+                Console.WriteLine($"[UserController] Error during GetUserByUsernameAsync: {ex.Message}");
                 return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
             }
         }
 
+        // PUT for /users/{username} aka profile, in order to change profile
         public async Task<string> EditUserProfileAsync(string username, string body)
         {
             try
@@ -64,12 +46,18 @@ namespace SportsBattleApp.Controllers
                     return JsonConvert.SerializeObject(new { success = false, error = "Invalid input." });
                 }
 
-                bool success = await _authService.EditUserProfileAsync(username, data);
-                return JsonConvert.SerializeObject(new { success });
+                bool success = await _userService.EditUserProfileAsync(username, data);
+
+                if (success)
+                {
+                    Console.WriteLine($"[UserController] Updating user profile was successful!");
+                }
+
+                return JsonConvert.SerializeObject(new { success, message = $"User {username} was successfully updated." });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[UserController] Error during Register: {ex.Message}");
+                Console.WriteLine($"[UserController] Error during EditUserProfileAsync: {ex.Message}");
                 return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
             }
         }

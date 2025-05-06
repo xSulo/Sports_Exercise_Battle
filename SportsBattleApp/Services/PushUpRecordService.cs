@@ -16,13 +16,15 @@ namespace SportsBattleApp.Services
             _userRepository = userRepository;
             _authService = authService;
         }
+
+        // GET for /history, in order to view users entire history
         public async Task<List<PushUpRecordGetHistoryDTO>> GetHistoryByUserIdAsync(string token)
         {
             try
             {
                 var TokenDataAndUserId = await _userRepository.GetTokenDataAndUserIdAsync();
 
-                int userId = _authService.ValidateTokenDataAndGetUserId(token, TokenDataAndUserId);
+                int? userId = await _authService.ValidateTokenDataAndGetUserId(token);
 
                 return await _pushUpRecordRepository.GetHistoryByUserIdAsync(userId);
             }
@@ -33,14 +35,15 @@ namespace SportsBattleApp.Services
             }
         }
 
+        // POST for /history, in order to add a new record to the history
         public async Task<bool> PostHistoryByUserIdAsync(string token, PushUpRecordPostHistoryDTO pushUpRecord)
         {
             try
             {
-                var TokenDataAndUserId = await _userRepository.GetTokenDataAndUserIdAsync();
+                var TokenDataAndUserId = await _userRepository.GetTokenDataAsync();
 
 
-                int userId = _authService.ValidateTokenDataAndGetUserId(token, TokenDataAndUserId);
+                int userId = await _authService.ValidateTokenDataAndGetUserId(token);
 
                 if (userId == 0)
                 {

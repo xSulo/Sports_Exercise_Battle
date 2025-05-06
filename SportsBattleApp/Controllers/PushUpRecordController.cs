@@ -14,6 +14,7 @@ namespace SportsBattleApp.Controllers
             _pushUpRecordService = pushUpRecordService;
         }
 
+        // GET for /history, in order to view users entire history
         public async Task<string> GetHistoryByTokenAsync(string header)
         {
             try
@@ -23,6 +24,8 @@ namespace SportsBattleApp.Controllers
                 {
                     return JsonConvert.SerializeObject(new { success = false, error = "No history found." });
                 }
+
+                Console.WriteLine($"[UserController] Getting user history was successful!");
                 return JsonConvert.SerializeObject(new { success = true, history });
             }
             catch (Exception ex)
@@ -32,6 +35,7 @@ namespace SportsBattleApp.Controllers
             }
         }
 
+        // POST for /history, in order to add a new record to the history
         public async Task<string> PostHistoryByTokenAsync(string token, string body)
         {
             try
@@ -44,11 +48,17 @@ namespace SportsBattleApp.Controllers
                 }
 
                 bool success = await _pushUpRecordService.PostHistoryByUserIdAsync(token, data);
-                return JsonConvert.SerializeObject(new { success });
+
+                if (success)
+                {
+                    Console.WriteLine($"[UserController] Adding user record to history was successful!");
+                }
+
+                return JsonConvert.SerializeObject(new { success, message = $"New record has been created successfully." });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[PushUpRecordController] Error during PostHistoryByTokenHashAsync: {ex.Message}");
+                Console.WriteLine($"[PushUpRecordController] Error during PostHistoryByTokenAsync: {ex.Message}");
                 return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
             }
         }

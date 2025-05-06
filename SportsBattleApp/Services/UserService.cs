@@ -8,22 +8,45 @@ namespace SportsBattleApp.Services
     public class UserService
     {
         private readonly UserRepository _userRepository;
+        private readonly HashingService _hashingService;
 
-        public UserService(UserRepository userRepository)
+        public UserService(UserRepository userRepository, HashingService hashingService)
         {
             _userRepository = userRepository;
+            _hashingService = hashingService;
         }
 
-        public async Task<UserProfileDTO> GetUserByUsernameAsync(string username)
+        // GET for /users/{username} aka profile, in order to view the profile
+        public async Task<UserProfileDTO> GetUserProfileByUsernameAsync(string username)
         {
             try
             {
-                return await _userRepository.GetUserByUsernameAsync(username);
+                return await _userRepository.GetUserProfileByUsernameAsync(username);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[UserService] Error during Register: {ex.Message}");
+                Console.WriteLine($"[UserService] Error during GetUserByUsernameAsync: {ex.Message}");
                 return null;
+            }
+        }
+
+        // PUT for /users/{username} aka profile, in order to change profile
+        public async Task<bool> EditUserProfileAsync(string username, User newUserData)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(newUserData.PasswordHash))
+                {
+                    string passwordHash = _hashingService.HashValue(newUserData.PasswordHash);
+                    newUserData.SetPasswordHash(passwordHash);
+                }
+
+                return await _userRepository.UpdateUserProfileAsync(username, newUserData);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UserService] Error during EditUserProfileAsync: {ex.Message}");
+                return false;
             }
         }
     }
