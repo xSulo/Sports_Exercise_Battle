@@ -24,8 +24,8 @@ namespace SportsBattleApp.Http
 
 
             var userService = new UserService(userRepository);
-            var pushUpRecordService = new PushUpRecordService(pushUpRecordRepository, userRepository);
             var authService = new AuthService(userRepository);
+            var pushUpRecordService = new PushUpRecordService(pushUpRecordRepository, userRepository, authService);
 
             var userController = new UserController(userService, authService);
             var pushUpRecordController = new PushUpRecordController(pushUpRecordService);
@@ -39,8 +39,8 @@ namespace SportsBattleApp.Http
             AddDynamicRoute("PUT", "/users/{username}", userController.EditUserProfileAsync);
 
             // History
-            AddRoute("GET", "/history", pushUpRecordController.GetHistoryByTokenHashAsync);
-            AddRouteWithToken("POST", "/history", pushUpRecordController.PostHistoryByTokenHashAsync);
+            AddRoute("GET", "/history", pushUpRecordController.GetHistoryByTokenAsync);
+            AddRouteWithToken("POST", "/history", pushUpRecordController.PostHistoryByTokenAsync);
         }
 
         public void AddRoute(string method, string path, Func<string, Task<string>> handler)

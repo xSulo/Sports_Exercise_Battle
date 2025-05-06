@@ -14,11 +14,11 @@ namespace SportsBattleApp.Controllers
             _pushUpRecordService = pushUpRecordService;
         }
 
-        public async Task<string> GetHistoryByTokenHashAsync(string header)
+        public async Task<string> GetHistoryByTokenAsync(string header)
         {
             try
             {
-                var history = await _pushUpRecordService.GetHistoryByTokenHashAsync(header);
+                var history = await _pushUpRecordService.GetHistoryByUserIdAsync(header);
                 if (history == null)
                 {
                     return JsonConvert.SerializeObject(new { success = false, error = "No history found." });
@@ -32,14 +32,10 @@ namespace SportsBattleApp.Controllers
             }
         }
 
-        public async Task<string> PostHistoryByTokenHashAsync(string token, string body)
+        public async Task<string> PostHistoryByTokenAsync(string token, string body)
         {
             try
             {
-                if (token.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
-                {
-                    token = token.Substring("Basic ".Length + 1);
-                }
 
                 var data = JsonConvert.DeserializeObject<PushUpRecordPostHistoryDTO>(body);
                 if (data == null || string.IsNullOrWhiteSpace(data.Name) || data.Count <= 0 || data.DurationInSeconds <= 0)
@@ -47,7 +43,7 @@ namespace SportsBattleApp.Controllers
                     return JsonConvert.SerializeObject(new { success = false, error = "Invalid input." });
                 }
 
-                bool success = await _pushUpRecordService.PostHistoryByTokenHashAsync(token, data);
+                bool success = await _pushUpRecordService.PostHistoryByUserIdAsync(token, data);
                 return JsonConvert.SerializeObject(new { success });
             }
             catch (Exception ex)

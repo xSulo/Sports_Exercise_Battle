@@ -1,4 +1,6 @@
-﻿using SportsBattleApp.Models;
+﻿using Newtonsoft.Json.Linq;
+using SportsBattleApp.DTOs;
+using SportsBattleApp.Models;
 using SportsBattleApp.Repositories;
 using static SportsBattleApp.Models.User;
 using static System.Net.Mime.MediaTypeNames;
@@ -28,14 +30,11 @@ namespace SportsBattleApp.Services
                     throw new InvalidOperationException("Invalid password.");
                 }
 
-                //string tokenHash = CreateTokenHash(username);
-                string token = CreateToken(username);
-                //DateTime expireDateToken = CreateTokenExpiraryDate();
+                string tokenHash = CreateTokenHash(username);
+                //string token = CreateToken(username);
+                DateTime expireDateToken = CreateTokenExpiraryDate();
 
-                //await _userRepository.UpdateTokenHashAsync(username, token, expireDateToken);
-                await _userRepository.UpdateTokenHashAsync(username, token);
-
-                return true;
+                return await _userRepository.UpdateTokenHashAsync(username, tokenHash, expireDateToken);
             }
             catch (Exception ex)
             {
@@ -67,27 +66,22 @@ namespace SportsBattleApp.Services
         {
             try
             {
-                if (token.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
+                 var storedTokenList = await _userRepository.GetTokenDataAsync();
+
+                foreach(var storedToken in storedTokenList)
                 {
-                    token = token.Substring("Basic ".Length + 1);
+                    if (VerifyHash(RemoveTokenPrefix(token), storedToken.TokenHash))
+                    {
+                        if (storedToken.ExpireDate < DateTime.UtcNow)
+                        {
+                            throw new InvalidOperationException("Token expired. Login in order to get a new token.");
+                        }
+
+                        return true;
+                    }
                 }
                 
-                // var storedTokenExpireDate = await _userRepository.GetTokenHashByTokenHashAsync(token);
-
-                // I know that this doesnt make any sense, but Im probably failing this class cos I spent the entire day trying to fix this, worked perfeclty fine before -.-
-                var storedToken = await _userRepository.GetTokenHashByTokenHashAsync(token);
-                if (storedToken == null)
-                {
-                    throw new InvalidOperationException("Token not found.");
-                }
-
-                //if (storedTokenExpireDate < DateTime.UtcNow)
-                //{
-                //    throw new InvalidOperationException("Invalid token.");
-                //}
-                //return VerifyHash(token, storedToken);
-
-                return token == storedToken;
+                throw new InvalidOperationException("Token not found.");
             }
             catch (Exception ex)
             {
@@ -100,9 +94,6 @@ namespace SportsBattleApp.Services
         {
             try
             {
-                //newUserData.SetTokenHash(HashValue(newUserData.Username));
-                //newUserData.TokenExpiresAt = CreateTokenExpiraryDate();
-
                 if (!string.IsNullOrEmpty(newUserData.PasswordHash))
                 {
                     newUserData.SetPasswordHash(HashValue(newUserData.PasswordHash));
@@ -118,19 +109,48 @@ namespace SportsBattleApp.Services
             }
         }
 
+        public int ValidateTokenDataAndGetUserId(string token, List<TokenDataAndUserIdDTO> TokenAndUserData)
+        {
+            try
+            {
+                foreach (var data in TokenAndUserData)
+                {
+                    if (VerifyHash(RemoveTokenPrefix(token), data.TokenHash))
+                    {
+                        if (data.ExpireDate < DateTime.UtcNow)
+                        {
+                            throw new InvalidOperationException("Token expired. Login in order to get a new token.");
+                        }
+
+                        return data.UserId;
+                    }
+                }
+                throw new InvalidOperationException("Token invalid.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AuthService] Error during Validating of token data: {ex.Message}");
+                return 0;
+            }
+        }
+
         private static string HashValue(string plainTextValue)
         {
             return BCrypt.Net.BCrypt.HashPassword(plainTextValue);
         }
 
-        public static string CreateTokenHash(string username)
+        private static string RemoveTokenPrefix(string token)
         {
-            return HashValue($"{username}-sebToken");
+            if (token.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
+            {
+                return token.Substring("Basic ".Length + 1);
+            }
+            return token;
         }
 
-        public static string CreateToken(string username)
+        private static string CreateTokenHash(string username)
         {
-            return $"{username}-sebToken";
+            return HashValue($"{username}-sebToken");
         }
 
         private static DateTime CreateTokenExpiraryDate()
@@ -138,7 +158,7 @@ namespace SportsBattleApp.Services
             return DateTime.UtcNow.AddHours(3);
         }
 
-        private static bool VerifyHash(string plainText, string Hash)
+        private bool VerifyHash(string plainText, string Hash)
         {
             return BCrypt.Net.BCrypt.Verify(plainText, Hash);
         }
