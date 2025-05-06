@@ -8,10 +8,12 @@ namespace SportsBattleApp.Services
     {
         private readonly PushUpRecordRepository _pushUpRecordRepository;
         private readonly UserRepository _userRepository;
-        public PushUpRecordService(PushUpRecordRepository pushUpRecordRepository, UserRepository userRepository)
+        private readonly AuthService _authService;
+        public PushUpRecordService(PushUpRecordRepository pushUpRecordRepository, UserRepository userRepository, AuthService authService)
         {
             _pushUpRecordRepository = pushUpRecordRepository;
             _userRepository = userRepository;
+            _authService = authService;
         }
         public async Task<PushUpRecordGetHistoryDTO> GetHistoryByTokenHashAsync(string tokenHash)
         {
@@ -30,7 +32,7 @@ namespace SportsBattleApp.Services
         {
             try
             {
-                var userId = await _userRepository.GetUserIdByTokenHashAsync(tokenHash);
+                var userId = await _userRepository.GetTokenDataAndUserIdAsync();
 
                 int userId2 = Convert.ToInt32(userId);
 

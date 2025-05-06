@@ -110,16 +110,14 @@ namespace SportsBattleApp.Repositories
             }
         }
 
-        //public async Task<bool> UpdateTokenHashAsync(string username, string tokenHash, DateTime tokenExpiresAt)
-        public async Task<bool> UpdateTokenHashAsync(string username, string tokenHash)
+        public async Task<bool> UpdateTokenHashAsync(string username, string tokenHash, DateTime tokenExpiresAt)
         {
-            //string query = "UPDATE users SET token_hash = @tokenHash, token_expires_at = @tokenExpiresAt WHERE username = @username";
-            string query = "UPDATE users SET token_hash = @tokenHash WHERE username = @username";
+            string query = "UPDATE users SET token_hash = @tokenHash, token_expires_at = @tokenExpiresAt WHERE username = @username";
             var parameters = new Dictionary<string, object>
             {
                 { "@username", username },
                 { "@tokenHash", tokenHash },
-                //{ "@tokenExpiresAt", tokenExpiresAt }
+                { "@tokenExpiresAt", tokenExpiresAt }
             };
 
             try
@@ -134,33 +132,35 @@ namespace SportsBattleApp.Repositories
             }
         }
 
-        public async Task<string> GetTokenHashByTokenHashAsync(string tokenHash)
+        public async Task<List<TokenHashAndExpireDateDTO>> GetTokenDataAsync()
         {
-            string query = "SELECT token_hash FROM users WHERE token_hash = @tokenHash";
-            var parameters = new Dictionary<string, object>
-            {
-                { "@tokenHash", tokenHash }
-            };
+            string query = "SELECT token_expires_at, token_hash FROM users";
+        
             try
             {
-                Console.WriteLine(tokenHash + "suiuiui");
-                var result = await _db.ExecuteScalarAsync(query, parameters);
-                Console.WriteLine(result + "suiuiui");
-                return result?.ToString();
+                var results = await _db.ExecuteReaderAsync(query, new Dictionary<string, object>());
 
-                /* if (result == null)
-                 {
+                if (results == null || results.Count == 0)
+                {
                      return null;
-                 }*/
-                //Console.WriteLine(result["token_expires_at"] + "suiuiui");
-                //DateTime TokenExpireDate = Convert.ToDateTime(result);
-                ////Console.WriteLine(result + "suiuiui");
-                //Console.WriteLine(TokenExpireDate);
-                //return TokenExpireDate;
+                }
+
+                var TokenList = new List<TokenHashAndExpireDateDTO>();
+
+                foreach (var row in results)
+                {
+                    TokenList.Add(new TokenHashAndExpireDateDTO
+                    {
+                        TokenHash = row["token_hash"].ToString(),
+                        ExpireDate = Convert.ToDateTime(row["token_expires_at"])
+                    });
+                }
+
+                return TokenList;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[UserRepository] Error in IsTokenValid: {ex.Message}");
+                Console.WriteLine($"[UserRepository] Error in GetTokenDataAsync: {ex.Message}");
                 return null;
             }
         }
@@ -203,7 +203,7 @@ namespace SportsBattleApp.Repositories
                 parameters["@winningSpeech"] = newUserData.WinningSpeech;
             }
             setClauses.Add("token_hash = @tokenHash");
-            parameters["@tokenHash"] = DBNull.Value; ;
+            parameters["@tokenHash"] = DBNull.Value;
 
             setClauses.Add("token_expires_at = @tokenExpireDate");
             parameters["@tokenExpireDate"] = DBNull.Value;
@@ -229,27 +229,37 @@ namespace SportsBattleApp.Repositories
             }
         }
 
-        public async Task<int> GetUserIdByTokenHashAsync(string tokenHash)
+        public async Task<List<TokenDataAndUserIdDTO>> GetTokenDataAndUserIdAsync()
         {
-            string query = "SELECT id FROM users WHERE token_hash = @tokenHash";
-            var parameters = new Dictionary<string, object>
-            {
-                { "@tokenHash", tokenHash }
-            };
-            Console.WriteLine($"[DEBUG] tokenHash: '{tokenHash}'");
+            string query = "SELECT id, token_expires_at, token_hash FROM users";
 
-            int i = 0;
             try
             {
-                var result = await _db.ExecuteScalarAsync(query, parameters);
+                var results = await _db.ExecuteReaderAsync(query, new Dictionary<string, object>());
 
-                Console.Write(result);
-                return Convert.ToInt32(result);
+                if (results == null || results.Count == 0)
+                {
+                    return null;
+                }
+
+                var TokenListAndUserId = new List<TokenDataAndUserIdDTO>();
+
+                foreach (var row in results)
+                {
+                    TokenListAndUserId.Add(new TokenDataAndUserIdDTO
+                    {
+                        UserId = Convert.ToInt32(row["id"]),
+                        TokenHash = row["token_hash"].ToString(),
+                        ExpireDate = Convert.ToDateTime(row["token_expires_at"])
+                    });
+                }
+
+                return TokenListAndUserId;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[UserRepository] Error in GetPasswordHashByUsername: {ex.Message}");
-                return i;
+                Console.WriteLine($"[UserRepository] Error in GetTokenDataAndUserIdAsync: {ex.Message}");
+                return null;
             }
         }
     }

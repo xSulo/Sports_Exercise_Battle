@@ -24,8 +24,8 @@ namespace SportsBattleApp.Http
 
 
             var userService = new UserService(userRepository);
-            var pushUpRecordService = new PushUpRecordService(pushUpRecordRepository, userRepository);
             var authService = new AuthService(userRepository);
+            var pushUpRecordService = new PushUpRecordService(pushUpRecordRepository, userRepository, authService);
 
             var userController = new UserController(userService, authService);
             var pushUpRecordController = new PushUpRecordController(pushUpRecordService);

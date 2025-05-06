@@ -59,7 +59,6 @@ namespace SportsBattleApp.Repositories
                 { "@tokenHash", tokenHash }
             };
 
-
             try
             {
                 await _db.ExecuteNonQueryAsync(query, parameters);
