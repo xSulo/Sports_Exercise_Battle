@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SportsBattleApp.Services;
+using SportsBattleApp.Tcp;
 
 namespace SportsBattleApp.Controllers
 {
@@ -20,7 +21,12 @@ namespace SportsBattleApp.Controllers
                 var stats = await _statsService.GetStatsByUserIdAsync(header);
                 if (stats == null)
                 {
-                    return JsonConvert.SerializeObject(new { success = false, error = "No stats found." });
+                    string errorMsg = "No stats found.";
+                    if (TournamentState.Instance.IsTournamentRunning)
+                    {
+                        errorMsg = "Cannot retrieve stats since Tournament is active.";
+                    }
+                        return JsonConvert.SerializeObject(new { success = false, error = errorMsg});
                 }
 
                 Console.WriteLine($"[UserController] Getting user stats was successful!");
@@ -29,6 +35,26 @@ namespace SportsBattleApp.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"[StatsController] Error during GetStatsByTokenAsync: {ex.Message}");
+                return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
+            }
+        }
+
+        public async Task<string> GetScoreByTokenAsync(string header)
+        {
+            try
+            {
+                var score = await _statsService.GetScoreByUserIdAsync(header);
+                if (score == null)
+                {
+                    return JsonConvert.SerializeObject(new { success = false, error = "No scores found." });
+                }
+
+                Console.WriteLine($"[UserController] Getting user stats was successful!");
+                return JsonConvert.SerializeObject(new { success = true, score });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[StatsController] Error during GetScoreByTokenAsync: {ex.Message}");
                 return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
             }
         }

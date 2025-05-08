@@ -18,7 +18,7 @@ namespace SportsBattleApp.Tcp
 
         private readonly object _lock = new();
 
-        private bool _isTournamentRunning = false;
+        public bool IsTournamentRunning = false;
         private TournamentGetStatusDTO? _lastTournamentResult = null;
         private DateTime? _tournamentStart;
         private Timer? _tournamentTimer;
@@ -31,7 +31,7 @@ namespace SportsBattleApp.Tcp
         {
             lock (_lock)
             {
-                if (_isTournamentRunning)
+                if (IsTournamentRunning)
                 {
                     int maxCount = _entries.Values.Max(x => x.Count);
                     var participants = _entries.Values.ToList();
@@ -57,7 +57,7 @@ namespace SportsBattleApp.Tcp
 
                     return new TournamentGetStatusDTO
                     {
-                        IsTournamentRunning = _isTournamentRunning,
+                        IsTournamentRunning = IsTournamentRunning,
                         Participants = participantsCount,
                         leader = leader,
                         TournamentStart = _tournamentStart?.ToString("yyyy-MM-dd HH:mm:ss")
@@ -71,7 +71,7 @@ namespace SportsBattleApp.Tcp
                 {
                     return new TournamentGetStatusDTO
                     {
-                        IsTournamentRunning = _isTournamentRunning,
+                        IsTournamentRunning = IsTournamentRunning,
                     };
                 }
             }
@@ -81,9 +81,9 @@ namespace SportsBattleApp.Tcp
         {
             lock (_lock)
             {
-                if (!_isTournamentRunning)
+                if (!IsTournamentRunning)
                 {
-                    _isTournamentRunning = true;
+                    IsTournamentRunning = true;
                     _tournamentStart = DateTime.UtcNow;
                     _tournamentTimer = new Timer(OnTournamentEnd, null, TimeSpan.FromMinutes(2), Timeout.InfiniteTimeSpan);
 
@@ -186,7 +186,7 @@ namespace SportsBattleApp.Tcp
                 }
 
                 _tournamentStart = null;
-                _isTournamentRunning = false;
+                IsTournamentRunning = false;
                 OnTournamentFinished?.Invoke(_entries.Values.ToList());
                 _entries.Clear();
                 _eventLog.Clear();
@@ -208,5 +208,8 @@ namespace SportsBattleApp.Tcp
                 return new List<string>(_eventLog);
             }
         }
+
+        public void StartTournament() => IsTournamentRunning = true;
+        public void EndTournament() => IsTournamentRunning = false;
     }
 }

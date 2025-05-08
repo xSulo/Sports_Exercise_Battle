@@ -397,5 +397,41 @@ namespace SportsBattleApp.Repositories
                 Console.WriteLine($"[UserRepository] Error in UpdateEloTournament: {ex.Message}");
             }
         }
+
+        public async Task<Dictionary<int, UserScoreDTO>> GetUserDataScoreAsync()
+        {
+            string query = "SELECT id, username, elo FROM users";
+
+            try
+            {
+                var results = await _db.ExecuteReaderAsync(query, new Dictionary<string, object>());
+
+                if (results == null || results.Count == 0)
+                {
+                    return null;
+                }
+
+                var userDataScore = new Dictionary<int, UserScoreDTO>();
+
+                foreach (var row in results)
+                {
+                    var userId = Convert.ToInt32(row["id"]);
+                    var userScoreDTO = new UserScoreDTO
+                    { 
+                        UserId = userId,
+                        Username = row["username"].ToString(),
+                        Elo = Convert.ToInt32(row["elo"])
+                    };
+                    userDataScore[userId] = userScoreDTO;
+                }
+
+                return userDataScore;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UserRepository] Error in GetUserDataScoreAsync: {ex.Message}");
+                return null;
+            }
+        }
     }
 }

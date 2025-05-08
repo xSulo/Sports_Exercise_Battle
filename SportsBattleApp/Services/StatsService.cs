@@ -1,5 +1,6 @@
 ﻿using SportsBattleApp.DTOs;
 using SportsBattleApp.Repositories;
+using SportsBattleApp.Tcp;
 
 namespace SportsBattleApp.Services
 {
@@ -21,6 +22,11 @@ namespace SportsBattleApp.Services
         {
             try
             {
+                if (TournamentState.Instance.IsTournamentRunning)
+                {
+                    Console.WriteLine($"[PushUpRecordService] Tournament is active, cannot get stats.");
+                    return null;
+                }
                 var TokenDataAndUserId = await _userRepository.GetTokenDataAndUserIdAsync();
 
                 int? userId = await _authService.ValidateTokenDataAndGetUserId(token);
@@ -32,6 +38,52 @@ namespace SportsBattleApp.Services
                 };
 
                 return stats;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[PushUpRecordService] Error during GetHistoryByTokenHashAsync: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<Dictionary<string, UserScoreDTO>> GetScoreByUserIdAsync(string token)
+        {
+            try
+            {
+                var userData = await _userRepository.GetUserDataScoreAsync();
+                var userIdAndCount = await _pushUpRecordRepository.GetAllPushUpsWithUserIdAsync();
+
+                foreach (var pushUpRecord in userIdAndCount)
+                {
+                    int userId = pushUpRecord.UserId;
+                    if (userData.ContainsKey(userId))
+                    {
+                        userData[userId].TotalPushUps += pushUpRecord.TotalPushUps;
+                    }
+                    else
+                    {
+                        userData[userId] = new UserScoreDTO
+                        {
+                            UserId = userId,
+                            TotalPushUps = pushUpRecord.TotalPushUps,
+                            Username = userData[userId].Username,
+                            Elo = userData[userId].Elo
+                        };
+                    }
+                }
+
+                var sorted = userData.Values
+                    .OrderByDescending(u => u.Elo)
+                    .ThenByDescending(u => u.TotalPushUps)
+                    .ToList();
+
+                var rankedUsers = new Dictionary<string, UserScoreDTO>();
+                for (int i = 0; i < sorted.Count; i++)
+                {
+                    rankedUsers.Add($"Rank {i + 1}", sorted[i]);
+                }
+
+                return rankedUsers;
             }
             catch (Exception ex)
             {
