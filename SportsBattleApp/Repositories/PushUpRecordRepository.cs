@@ -104,5 +104,37 @@ namespace SportsBattleApp.Repositories
                 return null;
             }
         }
+
+        public async Task<List<CountAndUserIdDTO>> GetAllPushUpsWithUserIdAsync()
+        {
+            string query = "SELECT user_id, SUM(count) AS totalpushups FROM history GROUP BY user_id";
+
+            try
+            {
+                var results = await _db.ExecuteReaderAsync(query, new Dictionary<string, object>());
+
+                if (results == null || results.Count == 0)
+                {
+                    return null;
+                }
+
+                var userDataScore = new List<CountAndUserIdDTO>();
+
+                foreach (var row in results)
+                {
+                    userDataScore.Add(new CountAndUserIdDTO
+                    {
+                        UserId = Convert.ToInt32(row["user_id"]),
+                        TotalPushUps = Convert.ToInt32(row["totalpushups"])
+                    });
+                }
+                return userDataScore;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UserRepository] Error in GetAllPushUpsWithUserIdAsync: {ex.Message}");
+                return null;
+            }
+        }
     }
 }

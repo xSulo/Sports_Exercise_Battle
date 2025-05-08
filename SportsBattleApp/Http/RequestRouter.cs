@@ -50,6 +50,7 @@ namespace SportsBattleApp.Http
 
             // Stats
             AddRoute("GET", "/stats", statsController.GetStatsByTokenAsync);
+            AddRoute("GET", "/score", statsController.GetScoreByTokenAsync);
 
             // Tournament
             AddRoute("GET", "/tournament", tournamentController.GetTournamentStatusAsync);
