@@ -7,12 +7,12 @@ dbConnection = new DatabaseConnection();
 /*dbConnection.OpenConnection();
 dbConnection.CloseConnection();
 dbConnection.Dispose();*/
-
+TcpTournamentServerSingleton.Instance.Start();
 var router = new RequestRouter(dbConnection);
 var httpServer1 = new HttpServer(router);
 await httpServer1.StartAsync();
 
-var tcpServer = new TcpTournament();
-await tcpServer.StartAsync();
+//TcpTournamentServerSingleton.Instance.Start();
+
 
 

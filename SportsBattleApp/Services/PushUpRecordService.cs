@@ -10,11 +10,14 @@ namespace SportsBattleApp.Services
         private readonly PushUpRecordRepository _pushUpRecordRepository;
         private readonly UserRepository _userRepository;
         private readonly AuthService _authService;
-        public PushUpRecordService(PushUpRecordRepository pushUpRecordRepository, UserRepository userRepository, AuthService authService)
+        private readonly TournamentService _tournamentService;
+
+        public PushUpRecordService(PushUpRecordRepository pushUpRecordRepository, UserRepository userRepository, AuthService authService, TournamentService tournamentService)
         {
             _pushUpRecordRepository = pushUpRecordRepository;
             _userRepository = userRepository;
             _authService = authService;
+            _tournamentService = tournamentService;
         }
 
         // GET for /history, in order to view users entire history
@@ -43,14 +46,18 @@ namespace SportsBattleApp.Services
                 var TokenDataAndUserId = await _userRepository.GetTokenDataAsync();
 
 
-                int userId = await _authService.ValidateTokenDataAndGetUserId(token);
+                var userStats = await _authService.ValidateTokenDataAndGetUserStatsTournamentAsync(token);
 
-                if (userId == 0)
+                if (userStats == null)
                 {
                     return false;
                 }
 
-                return await _pushUpRecordRepository.PostHistoryByUserIdAsync(userId, pushUpRecord);
+                userStats.Count = pushUpRecord.Count;
+                userStats.Duration = pushUpRecord.DurationInSeconds;
+                await _tournamentService.AddOrUpdateStatsAsync(userStats);
+
+                return await _pushUpRecordRepository.PostHistoryByUserIdAsync(userStats.UserId, pushUpRecord);
             }
             catch (Exception ex)
             {
