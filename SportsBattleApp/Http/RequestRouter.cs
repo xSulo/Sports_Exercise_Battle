@@ -25,13 +25,15 @@ namespace SportsBattleApp.Http
             var hashingService = new HashingService();
             var tokenService = new TokenService(hashingService);
             var authService = new AuthService(userRepository, hashingService, tokenService);
+            var tournamentService = new TournamentService(userRepository);
             var userService = new UserService(userRepository, hashingService);
-            var pushUpRecordService = new PushUpRecordService(pushUpRecordRepository, userRepository, authService);
+            var pushUpRecordService = new PushUpRecordService(pushUpRecordRepository, userRepository, authService, tournamentService);
             var statsService = new StatsService(userRepository, pushUpRecordRepository, authService);
 
             var userController = new UserController(userService);
             var pushUpRecordController = new PushUpRecordController(pushUpRecordService);
             var statsController = new StatsController(statsService);
+            var tournamentController = new TournamentController(tournamentService);
             _authController = new AuthController(authService);
 
             //Login and Register
@@ -48,6 +50,9 @@ namespace SportsBattleApp.Http
 
             // Stats
             AddRoute("GET", "/stats", statsController.GetStatsByTokenAsync);
+
+            // Tournament
+            AddRoute("GET", "/tournament", tournamentController.GetTournamentStatusAsync);
         }
 
         public void AddRoute(string method, string path, Func<string, Task<string>> handler)

@@ -111,7 +111,7 @@ namespace SportsBattleApp.Repositories
             }
         }
 
-        
+
         public async Task<bool> UpdateTokenHashAsync(string username, string tokenHash, DateTime tokenExpiresAt)
         {
             string query = "UPDATE users SET token_hash = @tokenHash, token_expires_at = @tokenExpiresAt WHERE username = @username";
@@ -138,14 +138,14 @@ namespace SportsBattleApp.Repositories
         public async Task<List<TokenHashAndExpireDateDTO>> GetTokenDataAsync()
         {
             string query = "SELECT token_expires_at, token_hash FROM users";
-        
+
             try
             {
                 var results = await _db.ExecuteReaderAsync(query, new Dictionary<string, object>());
 
                 if (results == null || results.Count == 0)
                 {
-                     return null;
+                    return null;
                 }
 
                 var TokenList = new List<TokenHashAndExpireDateDTO>();
@@ -184,9 +184,9 @@ namespace SportsBattleApp.Repositories
         // PUT for /users/{username} aka profile, in order to change profile
         public async Task<bool> UpdateUserProfileAsync(string username, User newUserData)
         {
-
+            bool isTokenChangeNeed = false;
             var setClauses = new List<string>();
-            var parameters = new Dictionary<string, object> { 
+            var parameters = new Dictionary<string, object> {
                 { "@usernameOld", username },
             };
 
@@ -194,12 +194,14 @@ namespace SportsBattleApp.Repositories
             {
                 setClauses.Add("username = @usernameNew");
                 parameters["@usernameNew"] = newUserData.Username;
+                isTokenChangeNeed = true;
             }
 
             if (!string.IsNullOrEmpty(newUserData.PasswordHash))
             {
                 setClauses.Add("password_hash = @passwordHash");
                 parameters["@passwordHash"] = newUserData.PasswordHash;
+                isTokenChangeNeed = true;
             }
 
             if (!string.IsNullOrEmpty(newUserData.Bio))
@@ -219,11 +221,15 @@ namespace SportsBattleApp.Repositories
                 setClauses.Add("winning_speech = @winningSpeech");
                 parameters["@winningSpeech"] = newUserData.WinningSpeech;
             }
-            setClauses.Add("token_hash = @tokenHash");
-            parameters["@tokenHash"] = DBNull.Value;
 
-            setClauses.Add("token_expires_at = @tokenExpireDate");
-            parameters["@tokenExpireDate"] = DBNull.Value;
+            if (isTokenChangeNeed)
+            {
+                setClauses.Add("token_hash = @tokenHash");
+                parameters["@tokenHash"] = DBNull.Value;
+
+                setClauses.Add("token_expires_at = @tokenExpireDate");
+                parameters["@tokenExpireDate"] = DBNull.Value;
+            }
 
             if (setClauses.Count == 0)
             {
@@ -333,6 +339,62 @@ namespace SportsBattleApp.Repositories
             {
                 Console.WriteLine($"[UserRepository] Error in GetUserIdByTokenHsahAsync: {ex.Message}");
                 return 0;
+            }
+        }
+
+        // Used by pushUpRecordsService/authService to get user stats for the tournament
+        public async Task<UserStatsTournamentDTO?> GetUserStatsTournamentByTokenHashAsync(string tokenHash)
+        {
+            string query = "SELECT id, username, elo, winning_speech FROM users WHERE token_hash = @tokenHash";
+
+            var parameters = new Dictionary<string, object>
+            {
+                { "@tokenHash", tokenHash }
+            };
+
+            try
+            {
+                var result = await _db.ExecuteReaderAsync(query, parameters);
+                var row = result[0];
+
+                if (row == null)
+                {
+                    return null;
+                }
+
+                var userStatsDto = new UserStatsTournamentDTO
+                {
+                    UserId = Convert.ToInt32(row["id"]),
+                    Username = row["username"].ToString(),
+                    Elo = Convert.ToInt32(row["elo"]),
+                    WinningSpeech = row["winning_speech"].ToString()
+                };
+
+                return userStatsDto;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UserRepository] Error in GetUserIdByTokenHsahAsync: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task UpdateEloTournament(int userId, int eloUpdate)
+        {
+            string query = "UPDATE users SET elo = elo + @eloUpdate WHERE id = @userId";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@userId", userId},
+                {"@eloUpdate", eloUpdate }
+            };
+
+            try
+            {
+                await _db.ExecuteNonQueryAsync(query, parameters);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UserRepository] Error in UpdateEloTournament: {ex.Message}");
             }
         }
     }

@@ -127,5 +127,34 @@ namespace SportsBattleApp.Services
                 return 0;
             }
         }
+
+        // Used by PushUpRecordsService in order to get user stats by token in order upload stats and insert them into a tournament
+        public async Task<UserStatsTournamentDTO?> ValidateTokenDataAndGetUserStatsTournamentAsync(string token)
+        {
+            try
+            {
+                var storedTokenList = await _userRepository.GetTokenDataAsync();
+
+                if (storedTokenList == null || storedTokenList.Count == 0)
+                {
+                    return null;
+                }
+
+                var result = _tokenService.ValidateToken(token, storedTokenList, true);
+
+                if (!result.IsValid)
+                {
+                    return null;
+                }
+
+                return await _userRepository.GetUserStatsTournamentByTokenHashAsync(result.TokenHash);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AuthService] Error during Validating of token data: {ex.Message}");
+                return null;
+            }
+        }
     }
 }
