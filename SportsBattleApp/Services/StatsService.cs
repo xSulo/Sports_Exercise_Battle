@@ -28,9 +28,9 @@ namespace SportsBattleApp.Services
                     return null;
                 }
                 var TokenDataAndUserId = await _userRepository.GetTokenDataAndUserIdAsync();
-
+                
                 int? userId = await _authService.ValidateTokenDataAndGetUserId(token);
-
+                
                 var stats = new GetStatsDTO()
                 {
                     Elo = await _userRepository.GetEloByUserIdAsync(userId),

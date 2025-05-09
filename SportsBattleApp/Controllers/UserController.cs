@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SportsBattleApp.DTOs;
 using SportsBattleApp.Models;
 using SportsBattleApp.Services;
 
@@ -14,7 +15,7 @@ namespace SportsBattleApp.Controllers
         }
 
         // GET for /users/{username} aka profile, in order to view the profile
-        public async Task<string> GetUserProfileByUsernameAsync(string username, string body)
+        public async Task<HttpResponseDTO> GetUserProfileByUsernameAsync(string username, string body)
         {
             try
             {
@@ -22,28 +23,44 @@ namespace SportsBattleApp.Controllers
 
                 if (user == null)
                 {
-                    return JsonConvert.SerializeObject(new { success = false, error = "User not found." });
+                    return new HttpResponseDTO
+                    {
+                        StatusCode = 404,
+                        JsonContent = JsonConvert.SerializeObject(new { success = false, error = "User not found." })
+                    };
                 }
 
                 Console.WriteLine($"[UserController] Getting user profile was successful!");
-                return JsonConvert.SerializeObject(new { success = true, user});
+                return new HttpResponseDTO
+                {
+                    StatusCode = 200,
+                    JsonContent = JsonConvert.SerializeObject(new { success = true, user })
+                };
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[UserController] Error during GetUserByUsernameAsync: {ex.Message}");
-                return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
+                return new HttpResponseDTO
+                {
+                    StatusCode = 500,
+                    JsonContent = JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" })
+                };
             }
         }
 
         // PUT for /users/{username} aka profile, in order to change profile
-        public async Task<string> EditUserProfileAsync(string username, string body)
+        public async Task<HttpResponseDTO> EditUserProfileAsync(string username, string body)
         {
             try
             {
                 var data = JsonConvert.DeserializeObject<User>(body);
                 if (data == null || string.IsNullOrWhiteSpace(username))
                 {
-                    return JsonConvert.SerializeObject(new { success = false, error = "Invalid input." });
+                    return new HttpResponseDTO
+                    {
+                        StatusCode = 400,
+                        JsonContent = JsonConvert.SerializeObject(new { success = false, error = "Invalid input." })
+                    };
                 }
 
                 bool success = await _userService.EditUserProfileAsync(username, data);
@@ -53,12 +70,20 @@ namespace SportsBattleApp.Controllers
                     Console.WriteLine($"[UserController] Updating user profile was successful!");
                 }
 
-                return JsonConvert.SerializeObject(new { success, message = $"User {username} was successfully updated." });
+                return new HttpResponseDTO
+                {
+                    StatusCode = 200,
+                    JsonContent = JsonConvert.SerializeObject(new { success, message = $"User {username} was successfully updated." })
+                };
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[UserController] Error during EditUserProfileAsync: {ex.Message}");
-                return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
+                return new HttpResponseDTO
+                {
+                    StatusCode = 500,
+                    JsonContent = JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" })
+                };
             }
         }
     }

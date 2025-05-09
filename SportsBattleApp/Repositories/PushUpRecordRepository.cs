@@ -82,6 +82,7 @@ namespace SportsBattleApp.Repositories
         // GET for /stats, in order to view user stats, this is used to get the total amount of push-ups
         public async Task<int?> GetTotalCountByUserIdAsync(int? userId)
         {
+            Console.WriteLine(userId);
             string query = "SELECT SUM(count) AS total_count FROM history WHERE user_id = @userId";
             var parameters = new Dictionary<string, object>
             {
@@ -91,7 +92,7 @@ namespace SportsBattleApp.Repositories
             {
                 var result = await _db.ExecuteScalarAsync(query, parameters);
 
-                if (result == null)
+                if (result == null || result == DBNull.Value)
                 {
                     return null;
                 }

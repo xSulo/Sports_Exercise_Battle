@@ -1,7 +1,11 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Net.Http.Json;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SportsBattleApp.Controllers;
 using SportsBattleApp.Data;
+using SportsBattleApp.DTOs;
 using SportsBattleApp.Repositories;
 using SportsBattleApp.Services;
 
@@ -9,15 +13,15 @@ namespace SportsBattleApp.Http
 {
     public class RequestRouter
     {
-        private readonly Dictionary<(string method, string path), Func<string, Task<string>>> _routesSimple;
-        private readonly Dictionary<(string method, string path), Func<string, string, Task<string>>> _routesWithToken;
-        private readonly List<(string method, string pattern, Func<string, string, Task<string>> handler)> _dynamicRoutes;
+        private readonly Dictionary<(string method, string path), Func<string, Task<HttpResponseDTO>>> _routesSimple;
+        private readonly Dictionary<(string method, string path), Func<string, string, Task<HttpResponseDTO>>> _routesWithToken;
+        private readonly List<(string method, string pattern, Func<string, string, Task<HttpResponseDTO>> handler)> _dynamicRoutes;
         private readonly AuthController _authController;
         public RequestRouter(DatabaseConnection db)
         {
-            _routesSimple = new Dictionary<(string method, string path), Func<string, Task<string>>>(new RouteComparer());
-            _routesWithToken = new Dictionary<(string method, string path), Func<string, string, Task<string>>>(new RouteComparer());
-            _dynamicRoutes = new List<(string method, string pattern, Func<string, string, Task<string>> handler)>();
+            _routesSimple = new Dictionary<(string method, string path), Func<string, Task<HttpResponseDTO>>>(new RouteComparer());
+            _routesWithToken = new Dictionary<(string method, string path), Func<string, string, Task<HttpResponseDTO>>>(new RouteComparer());
+            _dynamicRoutes = new List<(string method, string pattern, Func<string, string, Task<HttpResponseDTO>> handler)>();
 
             var userRepository = new UserRepository(db);
             var pushUpRecordRepository = new PushUpRecordRepository(db);
@@ -56,25 +60,23 @@ namespace SportsBattleApp.Http
             AddRoute("GET", "/tournament", tournamentController.GetTournamentStatusAsync);
         }
 
-        public void AddRoute(string method, string path, Func<string, Task<string>> handler)
+        public void AddRoute(string method, string path, Func<string, Task<HttpResponseDTO>> handler)
         {
             _routesSimple[(method, path)] = handler;
         }
 
-        public void AddRouteWithToken(string method, string path, Func<string, string, Task<string>> handler)
+        public void AddRouteWithToken(string method, string path, Func<string, string, Task<HttpResponseDTO>> handler)
         {
             _routesWithToken[(method, path)] = handler;
         }
 
-        public void AddDynamicRoute(string method, string pattern, Func<string, string, Task<string>> handler)
+        public void AddDynamicRoute(string method, string pattern, Func<string, string, Task<HttpResponseDTO>> handler)
         {
             _dynamicRoutes.Add((method, pattern, handler));
         }
 
-        public async Task<string> RouteHttpRequestAsync(string method, string path, string body, Dictionary<string, string> header)
+        public async Task<HttpResponseDTO> RouteHttpRequestAsync(string method, string path, string body, Dictionary<string, string> header)
         {
-            // Add functionality later -> users with tokens cannot use login or register
-
             if (_routesSimple.TryGetValue((method, path), out var simpleHandler) && (path == "/users" || path == "/sessions"))
             {
                 return await simpleHandler(body);
@@ -82,20 +84,30 @@ namespace SportsBattleApp.Http
 
             if (_routesWithToken.TryGetValue((method, path), out var tokenHandler))
             {
-                if ((!header.TryGetValue("Authorization", out var token) || !await _authController.IsTokenValidAsync(token)))
+                if (!header.TryGetValue("Authorization", out var token) || !await _authController.IsTokenValidAsync(token))
                 {
-                    return JsonConvert.SerializeObject(new { error = "401 Unauthorized" });
+                    return new HttpResponseDTO
+                    {
+                        StatusCode = 401,
+                        JsonContent = JsonConvert.SerializeObject(new { error = "Unauthorized" })
+                    };
                 }
+
                 return await tokenHandler(token, body);
             }
 
-            if (_routesSimple.TryGetValue((method, path), out var tokenHandlerGet) && method == "GET")
+            if (_routesSimple.TryGetValue((method, path), out var getHandler) && method == "GET")
             {
-                if ((!header.TryGetValue("Authorization", out var token) || !await _authController.IsTokenValidAsync(token)))
+                if (!header.TryGetValue("Authorization", out var token) || !await _authController.IsTokenValidAsync(token))
                 {
-                    return JsonConvert.SerializeObject(new { error = "401 Unauthorized" });
+                    return new HttpResponseDTO
+                    {
+                        StatusCode = 401,
+                        JsonContent = JsonConvert.SerializeObject(new { error = "Unauthorized" })
+                    };
                 }
-                return await tokenHandlerGet(token);
+
+                return await getHandler(token);
             }
 
             foreach (var route in _dynamicRoutes)
@@ -105,16 +117,24 @@ namespace SportsBattleApp.Http
                 {
                     var username = match.Groups[1].Value;
 
-                    if(!header.TryGetValue("Authorization", out var token) || !await _authController.IsTokenValidAsync(token))
+                    if (!header.TryGetValue("Authorization", out var token) || !await _authController.IsTokenValidAsync(token))
                     {
-                        return JsonConvert.SerializeObject(new { error = "401 Unauthorized" });
+                        return new HttpResponseDTO
+                        {
+                            StatusCode = 401,
+                            JsonContent = JsonConvert.SerializeObject(new { error = "Unauthorized" })
+                        };
                     }
 
                     return await route.handler(username, body);
                 }
             }
 
-            return JsonConvert.SerializeObject(new { error = "404 Not Found" });
+            return new HttpResponseDTO
+            {
+                StatusCode = 404,
+                JsonContent = JsonConvert.SerializeObject(new { error = "Not Found" })
+            };
         }
 
         // Create a new class RouteComparer that implements IEqualityComparer

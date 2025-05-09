@@ -13,39 +13,6 @@ namespace SportsBattleApp.Data
             _connectionString = "Host=localhost;Username=stegmen;Password=passwort1;Database=sportsbattledb";
         }
 
-        //// Method to establish connection
-        //public void OpenConnection()
-        //{
-        //    if (_connection == null)
-        //    {
-        //        _connection = new NpgsqlConnection(_connectionString);
-        //    }
-
-        //    try
-        //    {
-        //        _connection.Open();
-        //        Console.WriteLine("[Database] Connection established succesfully.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"[Database] Error while trying to establish connection: {ex.Message}");
-        //    }
-        //}
-
-        //// Method to close the connection
-        //public void CloseConnection()
-        //{
-        //    try
-        //    {
-        //        _connection?.close();
-        //        console.writeline("[database] connection closed successfully.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"[Database] Error while trying to close connection: {ex.Message}");
-        //    }
-        //}
-
         // For INSERT, UPDATE and DELETE queries
         public async Task ExecuteNonQueryAsync(string query, Dictionary<string, object> parameters)
         {
@@ -135,15 +102,5 @@ namespace SportsBattleApp.Data
             }
             return result;
         }
-
-
-
-        // Makes sure to correctly dispose of the connection
-        //public void Dispose()
-        //{
-        //    _connection?.Dispose();
-        //    _connection = null;
-        //    Console.WriteLine("[Database] Database connection disposed.");
-        //}
     }
 }
