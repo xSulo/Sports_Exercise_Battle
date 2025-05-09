@@ -3,19 +3,20 @@ https://www.dbdiagram.io/d
 Table users {
   id integer [primary key]
   username varchar (unique) [not null]
-  password varchar [not null]
-  token int
+  password_hash varchar [not null]
+  token_hash varchar
   elo integer [default: 100] 
   bio varchar
   image ENUM(":-), :-(, ...")
   winning_speech varchar
-  created_at timestamp
+  token_expires_at timestamp
+  created_at timestamp (default, now)
 }
 
 Table history {
   id integer [primary key]
-  user_id integer
-  tournament integer
+  user_id integer [not null]
+  tournament_number integer
   name varchar [not null]
   count integer [not null]
   duration integer [not null]
