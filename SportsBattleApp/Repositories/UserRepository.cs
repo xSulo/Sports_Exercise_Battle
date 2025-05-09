@@ -332,6 +332,7 @@ namespace SportsBattleApp.Repositories
                 {
                     return 0;
                 }
+                Console.WriteLine(Convert.ToInt32(result));
 
                 return Convert.ToInt32(result);
             }

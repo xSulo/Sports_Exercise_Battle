@@ -1,6 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.Diagnostics;
+using Newtonsoft.Json;
+using SportsBattleApp.DTOs;
 using SportsBattleApp.Services;
 using SportsBattleApp.Tcp;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace SportsBattleApp.Controllers
 {
@@ -14,7 +17,7 @@ namespace SportsBattleApp.Controllers
         }
 
         // GET for /stats, in order to view user stats
-        public async Task<string> GetStatsByTokenAsync(string header)
+        public async Task<HttpResponseDTO> GetStatsByTokenAsync(string header)
         {
             try
             {
@@ -26,36 +29,61 @@ namespace SportsBattleApp.Controllers
                     {
                         errorMsg = "Cannot retrieve stats since Tournament is active.";
                     }
-                        return JsonConvert.SerializeObject(new { success = false, error = errorMsg});
+
+                    return new HttpResponseDTO
+                    {
+                        StatusCode = 404,
+                        JsonContent = JsonConvert.SerializeObject(new { success = false, error = errorMsg })
+                    };
                 }
 
                 Console.WriteLine($"[UserController] Getting user stats was successful!");
-                return JsonConvert.SerializeObject(new { success = true, stats });
+                return new HttpResponseDTO
+                {
+                    StatusCode = 200,
+                    JsonContent = JsonConvert.SerializeObject(new { success = true, stats })
+                };
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[StatsController] Error during GetStatsByTokenAsync: {ex.Message}");
-                return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
+                return new HttpResponseDTO
+                {
+                    StatusCode = 500,
+                    JsonContent = JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" })
+                };
             }
         }
 
-        public async Task<string> GetScoreByTokenAsync(string header)
+        public async Task<HttpResponseDTO> GetScoreByTokenAsync(string header)
         {
             try
             {
                 var score = await _statsService.GetScoreByUserIdAsync(header);
                 if (score == null)
                 {
-                    return JsonConvert.SerializeObject(new { success = false, error = "No scores found." });
+                    return new HttpResponseDTO
+                    {
+                        StatusCode = 404,
+                        JsonContent = JsonConvert.SerializeObject(new { success = false, error = "No scores found." })
+                    };
                 }
 
                 Console.WriteLine($"[UserController] Getting user stats was successful!");
-                return JsonConvert.SerializeObject(new { success = true, score });
+                return new HttpResponseDTO
+                {
+                    StatusCode = 200,
+                    JsonContent = JsonConvert.SerializeObject(new { success = true, score })
+                };
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[StatsController] Error during GetScoreByTokenAsync: {ex.Message}");
-                return JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" });
+                return new HttpResponseDTO
+                {
+                    StatusCode = 500,
+                    JsonContent = JsonConvert.SerializeObject(new { success = false, error = "Internal Server Error" })
+                };
             }
         }
     }

@@ -1,5 +1,8 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
+using System.Reflection.PortableExecutable;
 using Newtonsoft.Json;
+using SportsBattleApp.DTOs;
 
 namespace SportsBattleApp.Http
 {
@@ -52,9 +55,9 @@ namespace SportsBattleApp.Http
                     body = await reader.ReadToEndAsync();
                 }
 
-                string result = await _router.RouteHttpRequestAsync(method, path, body, header);
-
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(result);
+                HttpResponseDTO responseDto = await _router.RouteHttpRequestAsync(method, path, body, header);
+                response.StatusCode = responseDto.StatusCode;
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseDto.JsonContent);
                 response.ContentLength64 = buffer.Length;
                 response.ContentType = "application/json";
 

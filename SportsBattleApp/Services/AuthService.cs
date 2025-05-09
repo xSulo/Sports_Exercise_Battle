@@ -57,7 +57,8 @@ namespace SportsBattleApp.Services
             {
                 if (await _userRepository.UserExistsAsync(username))
                 {
-                    throw new InvalidOperationException("Username already taken");
+                    Console.WriteLine("[AuthService] Error during Register: Username already taken");
+                    return false;
                 }
 
                 string passwordHash = _hashingService.HashValue(plainPassword);
@@ -76,8 +77,7 @@ namespace SportsBattleApp.Services
         {
             try
             {
-                 var storedTokenList = await _userRepository.GetTokenDataAsync();
-
+                var storedTokenList = await _userRepository.GetTokenDataAsync();
                 if (storedTokenList == null || storedTokenList.Count == 0)
                 {
                     return false;
